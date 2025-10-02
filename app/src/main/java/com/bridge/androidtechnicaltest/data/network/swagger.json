@@ -1,0 +1,473 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0",
+    "title": "Bridge Android Technical Test API (Version 1.0)",
+    "description": "This repository aims to provide an API to be used by the Android Technical test submissions."
+  },
+  "paths": {
+    "/pupils": {
+      "get": {
+        "tags": [
+          "Pupils"
+        ],
+        "summary": "Gets a paged collection of pupils. Each page has five pupils.",
+        "operationId": "PupilGetPage",
+        "consumes": [],
+        "produces": [],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number to retrieve.",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 1
+          },
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "description": "Used to uniquely identify the HTTP request. This ID is also passed to subsequent HTTP requests and is used to correlate between them.",
+            "required": true,
+            "type": "string",
+            "default": "097f51ca-e08d-46f2-a858-4956ed183a9c"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "description": "Used to identify the application making the HTTP request. This value is also passed to subsequent HTTP requests and is used to identify the caller.",
+            "required": true,
+            "type": "string",
+            "default": "Application-Name/1.0.0 (Operating System Name 1.0.0)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returned the specified page containing Pupils.",
+            "schema": {
+              "$ref": "#/definitions/PageViewModel[GetPupilViewModel]"
+            }
+          },
+          "404": {
+            "description": "Page with the specified number could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Pupils"
+        ],
+        "summary": "Creates a new pupil.",
+        "operationId": "PupilPostPupil",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "pupilViewModel",
+            "in": "body",
+            "description": "The pupil view model.",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/PostPupilViewModel"
+            }
+          },
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "description": "Used to uniquely identify the HTTP request. This ID is also passed to subsequent HTTP requests and is used to correlate between them.",
+            "required": true,
+            "type": "string",
+            "default": "dcb197e4-0a6a-4bae-9415-c30d701c69de"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "description": "Used to identify the application making the HTTP request. This value is also passed to subsequent HTTP requests and is used to identify the caller.",
+            "required": true,
+            "type": "string",
+            "default": "Application-Name/1.0.0 (Operating System Name 1.0.0)"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The Pupil was created, with the given URL.",
+            "schema": {
+              "$ref": "#/definitions/GetPupilViewModel"
+            }
+          },
+          "400": {
+            "description": "Pupil must be valid.",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/pupils/{pupilId}": {
+      "get": {
+        "tags": [
+          "Pupils"
+        ],
+        "summary": "Gets the pupil with the specified pupil ID.",
+        "operationId": "PupilGetPupil",
+        "consumes": [],
+        "produces": [],
+        "parameters": [
+          {
+            "name": "pupilId",
+            "in": "path",
+            "description": "The pupil identifier.",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "description": "Used to uniquely identify the HTTP request. This ID is also passed to subsequent HTTP requests and is used to correlate between them.",
+            "required": true,
+            "type": "string",
+            "default": "99d2c0a8-a28c-465a-8085-7bbdf1360b04"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "description": "Used to identify the application making the HTTP request. This value is also passed to subsequent HTTP requests and is used to identify the caller.",
+            "required": true,
+            "type": "string",
+            "default": "Application-Name/1.0.0 (Operating System Name 1.0.0)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returned the Pupil with the specified ID.",
+            "schema": {
+              "$ref": "#/definitions/GetPupilViewModel"
+            }
+          },
+          "400": {
+            "description": "Pupil ID cannot be less than or equal to zero.",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "404": {
+            "description": "Pupil with the specified ID could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Pupils"
+        ],
+        "summary": "Updates the pupil with the specified pupil ID.",
+        "operationId": "PupilPutPupil",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "pupilId",
+            "in": "path",
+            "description": "The pupil identifier.",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pupilViewModel",
+            "in": "body",
+            "description": "The value.",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/PutPupilViewModel"
+            }
+          },
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "description": "Used to uniquely identify the HTTP request. This ID is also passed to subsequent HTTP requests and is used to correlate between them.",
+            "required": true,
+            "type": "string",
+            "default": "1c148919-1163-45fc-bc88-f60dcef0743e"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "description": "Used to identify the application making the HTTP request. This value is also passed to subsequent HTTP requests and is used to identify the caller.",
+            "required": true,
+            "type": "string",
+            "default": "Application-Name/1.0.0 (Operating System Name 1.0.0)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Pupil was updated.",
+            "schema": {
+              "$ref": "#/definitions/GetPupilViewModel"
+            }
+          },
+          "400": {
+            "description": "Pupil must be valid and must match the query Pupil ID.",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "404": {
+            "description": "Pupil with the specified ID could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Pupils"
+        ],
+        "summary": "Deletes the pupil with the specified pupil ID.",
+        "operationId": "PupilDeletePupil",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "pupilId",
+            "in": "path",
+            "description": "The pupil identifier.",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "description": "Used to uniquely identify the HTTP request. This ID is also passed to subsequent HTTP requests and is used to correlate between them.",
+            "required": true,
+            "type": "string",
+            "default": "377e523b-d5dc-4e04-b27a-87bc0d3328b9"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "description": "Used to identify the application making the HTTP request. This value is also passed to subsequent HTTP requests and is used to identify the caller.",
+            "required": true,
+            "type": "string",
+            "default": "Application-Name/1.0.0 (Operating System Name 1.0.0)"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The Pupil was deleted."
+          },
+          "400": {
+            "description": "Pupil ID cannot be less than or equal to zero.",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "404": {
+            "description": "Pupil with the specified ID could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "PageViewModel[GetPupilViewModel]": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "uniqueItems": false,
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/GetPupilViewModel"
+          }
+        },
+        "pageNumber": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "itemCount": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "totalPages": {
+          "format": "int32",
+          "type": "integer"
+        }
+      }
+    },
+    "GetPupilViewModel": {
+      "type": "object",
+      "properties": {
+        "pupilId": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "country": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "latitude": {
+          "format": "double",
+          "type": "number"
+        },
+        "longitude": {
+          "format": "double",
+          "type": "number"
+        }
+      }
+    },
+    "ProblemDetails": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "status": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "instance": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "PostPupilViewModel": {
+      "required": [
+        "country",
+        "name",
+        "latitude",
+        "longitude"
+      ],
+      "type": "object",
+      "properties": {
+        "country": {
+          "maxLength": 100,
+          "minLength": 2,
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 100,
+          "minLength": 2,
+          "type": "string"
+        },
+        "image": {
+          "maxLength": 1000,
+          "minLength": 11,
+          "type": "string"
+        },
+        "latitude": {
+          "format": "double",
+          "maximum": 90,
+          "minimum": -90,
+          "type": "number"
+        },
+        "longitude": {
+          "format": "double",
+          "maximum": 180,
+          "minimum": -180,
+          "type": "number"
+        }
+      }
+    },
+    "PutPupilViewModel": {
+      "required": [
+        "pupilId",
+        "country",
+        "name",
+        "latitude",
+        "longitude"
+      ],
+      "type": "object",
+      "properties": {
+        "pupilId": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "country": {
+          "maxLength": 100,
+          "minLength": 2,
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "image": {
+          "maxLength": 1000,
+          "minLength": 11,
+          "type": "string"
+        },
+        "latitude": {
+          "format": "double",
+          "maximum": 90,
+          "minimum": -90,
+          "type": "number"
+        },
+        "longitude": {
+          "format": "double",
+          "maximum": 180,
+          "minimum": -180,
+          "type": "number"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "basic": {
+      "type": "basic",
+      "description": "Basic HTTP Authentication using a username and password."
+    },
+    "oauth2": {
+      "flow": "implicit",
+      "authorizationUrl": "https://login.microsoftonline.com//oauth2/authorize",
+      "tokenUrl": "https://login.microsoftonline.com//oauth2/token",
+      "type": "oauth2",
+      "description": "OAuth2 Authentication using Azure Active Directory."
+    }
+  },
+  "tags": []
+}

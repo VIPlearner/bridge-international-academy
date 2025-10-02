@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Android Technical Test</string>
+
+    <string name="pupil_detail_id">Id</string>
+    <string name="pupil_detail_name">Name</string>
+    <string name="pupil_detail_country">Country</string>
+    <string name="sync">Sync</string>
+
+    <string name="data_reset">Api Data Reset</string>
+    <string name="data_reset_failed">Data Reset Failed</string>
+</resources>
