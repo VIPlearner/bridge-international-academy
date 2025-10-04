@@ -3,6 +3,7 @@ package com.bridge.androidtechnicaltest.data.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import com.bridge.androidtechnicaltest.domain.SyncState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -47,5 +48,37 @@ class DataStoreRepository @Inject constructor(
         dataStore.edit { preferences ->
             preferences.clear()
         }
+    }
+
+    /**
+     * Get the pupil sync state as a Flow
+     * Default value is OUT_OF_DATE
+     */
+    fun getPupilSyncState(): Flow<SyncState> {
+        return dataStore.data.map { preferences ->
+            val stateString = preferences[DataStoreConstants.PUPIL_SYNC_STATE]
+            try {
+                stateString?.let { SyncState.valueOf(it) } ?: SyncState.OUT_OF_DATE
+            } catch (e: IllegalArgumentException) {
+                SyncState.OUT_OF_DATE
+            }
+        }
+    }
+
+    /**
+     * Set the pupil sync state
+     */
+    suspend fun setPupilSyncState(syncState: SyncState) {
+        dataStore.edit { preferences ->
+            preferences[DataStoreConstants.PUPIL_SYNC_STATE] = syncState.name
+        }
+    }
+
+    /**
+     * Get the current pupil sync state synchronously
+     * Default value is OUT_OF_DATE
+     */
+    suspend fun getPupilSyncStateSync(): SyncState {
+        return getPupilSyncState().first()
     }
 }

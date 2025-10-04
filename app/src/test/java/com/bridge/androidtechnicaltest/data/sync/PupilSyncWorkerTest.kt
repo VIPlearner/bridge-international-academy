@@ -3,6 +3,7 @@ package com.bridge.androidtechnicaltest.data.sync
 import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.testing.TestListenableWorkerBuilder
+import com.bridge.androidtechnicaltest.data.datastore.DataStoreRepository
 import com.bridge.androidtechnicaltest.data.db.AppDatabase
 import com.bridge.androidtechnicaltest.data.db.dao.PupilDao
 import com.bridge.androidtechnicaltest.data.db.dto.Pupil
@@ -28,6 +29,7 @@ class PupilSyncWorkerTest {
     private lateinit var appDatabase: AppDatabase
     private lateinit var pupilApi: PupilApi
     private lateinit var pupilDao: PupilDao
+    private lateinit var dataStoreRepository: DataStoreRepository
 
     private lateinit var testWorkerFactory: TestWorkerFactory
 
@@ -37,8 +39,10 @@ class PupilSyncWorkerTest {
         appDatabase = mockk()
         pupilApi = mockk()
         pupilDao = mockk()
+        dataStoreRepository = mockk()
+        testWorkerFactory = TestWorkerFactory(pupilApi, appDatabase, dataStoreRepository)
         every { appDatabase.pupilDao } returns pupilDao
-        testWorkerFactory = TestWorkerFactory(pupilApi, appDatabase)
+        coEvery { dataStoreRepository.setPupilSyncState(any()) } just Runs
     }
 
     @After

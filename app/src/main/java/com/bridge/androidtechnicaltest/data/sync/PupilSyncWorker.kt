@@ -4,14 +4,14 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import androidx.work.ListenableWorker
 import com.bridge.androidtechnicaltest.data.db.AppDatabase
 import com.bridge.androidtechnicaltest.data.db.dto.Pupil
 import com.bridge.androidtechnicaltest.data.db.dto.SyncType
+import com.bridge.androidtechnicaltest.data.datastore.DataStoreRepository
 import com.bridge.androidtechnicaltest.data.mapper.toCreatePupilRequest
-import com.bridge.androidtechnicaltest.data.mapper.toDbPupil
 import com.bridge.androidtechnicaltest.data.mapper.toUpdatePupilRequest
 import com.bridge.androidtechnicaltest.data.network.PupilApi
+import com.bridge.androidtechnicaltest.domain.SyncState
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
@@ -21,14 +21,17 @@ import kotlinx.coroutines.withContext
 class PupilSyncWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    private val database: AppDatabase,
-    private val pupilApi: PupilApi
+    database: AppDatabase,
+    private val pupilApi: PupilApi,
+    private val dataStoreRepository: DataStoreRepository
 ) : CoroutineWorker(context, workerParams) {
 
     private val pupilDao = database.pupilDao
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         try {
+            dataStoreRepository.setPupilSyncState(SyncState.SYNCING)
+
             val pupilsToSync = pupilDao.getPendingSyncPupils()
 
             var allSuccessful = true
@@ -37,20 +40,22 @@ class PupilSyncWorker @AssistedInject constructor(
                 allSuccessful = allSuccessful && success
             }
             if (!allSuccessful) {
+                dataStoreRepository.setPupilSyncState(SyncState.OUT_OF_DATE)
                 return@withContext Result.retry()
             }
 
             if (!fetchAllPupilsFromApi()) {
+                dataStoreRepository.setPupilSyncState(SyncState.OUT_OF_DATE)
                 return@withContext Result.retry()
             }
 
+            dataStoreRepository.setPupilSyncState(SyncState.UP_TO_DATE)
             Result.success()
         } catch (e: Exception) {
-            // Handle exceptions
+            dataStoreRepository.setPupilSyncState(SyncState.OUT_OF_DATE)
             Result.retry()
         }
     }
-
 
     private suspend fun fetchAllPupilsFromApi(): Boolean {
         val response = pupilApi.getPupils(page = 1)
@@ -110,7 +115,7 @@ class PupilSyncWorker @AssistedInject constructor(
 
         }
 
-        try{
+        try {
             when (pupil.syncType) {
                 SyncType.ADD -> {
                     return addPupil(pupil)
@@ -140,7 +145,7 @@ class PupilSyncWorker @AssistedInject constructor(
                     }
                 }
             }
-        } catch(e: Exception) {
+        } catch (e: Exception) {
 
             return false
         }

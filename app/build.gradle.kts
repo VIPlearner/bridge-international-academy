@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.bridge.androidtechnicaltest"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.bridge.androidtechnicaltest"
@@ -68,48 +68,34 @@ android {
 }
 
 dependencies {
-    // Core Android dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-
-    // Compose BOM and UI dependencies
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
+    implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
-
-    // Legacy Android dependencies (keeping for compatibility)
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.material)
-
-    // Hilt dependencies
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     kapt(libs.hilt.compiler)
-
-    // Room dependencies
     implementation(libs.bundles.room)
     kapt(libs.room.compiler)
-
-    // Network dependencies
     implementation(libs.bundles.retrofit)
-
-    // RxJava dependencies
     implementation(libs.bundles.rxjava)
-
-    // DataStore dependencies
     implementation(libs.bundles.datastore)
-
-    // WorkManager dependencies
     implementation(libs.workmanager)
     implementation(libs.hilt.work)
     kapt(libs.hilt.compiler)
-
-    // Timber logging
     implementation(libs.timber)
+    implementation(libs.materialKolor)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     // Test dependencies
     testImplementation(libs.junit)

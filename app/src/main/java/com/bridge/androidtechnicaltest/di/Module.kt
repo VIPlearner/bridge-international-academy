@@ -113,9 +113,13 @@ object DatabaseModule {
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(context, AppDatabase::class.java, "TechnicalTestDb")
-            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration(false)
             .build()
     }
+
+    @Provides
+    @Singleton
+    fun providesLocationCacheDao(database: AppDatabase) = database.locationCacheDao
 
     @Provides
     @Singleton
