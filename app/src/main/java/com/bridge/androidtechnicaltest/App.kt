@@ -18,6 +18,9 @@ class App : Application(), Configuration.Provider {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
+    @Inject
+    lateinit var pupilRepository: IPupilRepository
+
     private val applicationScope = CoroutineScope(SupervisorJob())
 
     override fun onCreate() {
@@ -26,6 +29,8 @@ class App : Application(), Configuration.Provider {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
+
+        pupilRepository.startSync()
     }
 
     override fun getWorkManagerConfiguration(): Configuration = Configuration.Builder()

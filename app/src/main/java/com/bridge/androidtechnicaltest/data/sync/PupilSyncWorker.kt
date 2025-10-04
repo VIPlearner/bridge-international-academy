@@ -56,7 +56,7 @@ class PupilSyncWorker @AssistedInject constructor(
         val response = pupilApi.getPupils(page = 1)
 
         if (!response.isSuccessful || response.body() == null) {
-            return false // Retry if the API call fails
+            return false
         }
 
         for (pupil in response.body()!!.items) {
@@ -73,7 +73,7 @@ class PupilSyncWorker @AssistedInject constructor(
         for (index in 2..response.body()!!.totalPages) {
             val pagedResponse = pupilApi.getPupils(page = index)
             if (!pagedResponse.isSuccessful || pagedResponse.body() == null) {
-                return false // Retry if the API call fails
+                return false
             }
             for (pupil in pagedResponse.body()!!.items) {
                 pupilDao.updatePupilWithRemoteInfo(

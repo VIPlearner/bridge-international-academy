@@ -3,9 +3,12 @@ package com.bridge.androidtechnicaltest.data.repository
 import com.bridge.androidtechnicaltest.data.db.AppDatabase
 import com.bridge.androidtechnicaltest.data.db.dto.Pupil
 import com.bridge.androidtechnicaltest.data.db.dto.SyncType
+import com.bridge.androidtechnicaltest.data.mapper.toCreatePupilRequest
+import com.bridge.androidtechnicaltest.data.mapper.toUpdatePupilRequest
 import com.bridge.androidtechnicaltest.data.network.PupilApi
 import com.bridge.androidtechnicaltest.data.sync.PupilSyncManager
 import kotlinx.coroutines.flow.Flow
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,20 +21,83 @@ class PupilRepository @Inject constructor(
 
     private val pupilDao = database.pupilDao
 
-    override val pupils: Flow<List<Pupil>> = pupilDao.pupils
+    override val pupils: Flow<List<Pupil>>
+        get() = pupilDao.pupils
+
+    override suspend fun getPupilById(pupilId: Int): Pupil? {
+        return pupilDao.getPupilById(pupilId)
+    }
 
     override suspend fun addPupil(pupil: Pupil) {
-        val pupilWithSync = pupil.copy(pendingSync = true, syncType = SyncType.ADD)
-        pupilDao.upsert(pupilWithSync)
+        val res = pupilApi.createPupil(pupil.toCreatePupilRequest())
+        if (res.isSuccessful && res.body() != null) {
+            val remotePupil = res.body()!!
+            pupilDao.upsert(
+                pupil.copy(
+                    remoteId = remotePupil.pupilId,
+                    syncType = null,
+                    pendingSync = false
+                )
+            )
+        } else if (res.code() == 400) {
+            Timber.d("Validation error adding pupil: ${res.errorBody()?.string()}")
+            pupilDao.upsert(pupil.copy(syncType = SyncType.ADD, pendingSync = true))
+        } else {
+            // Treat as Server error, mark for add sync
+            Timber.d("Server error adding pupil: ${res.errorBody()?.string()}")
+            pupilDao.upsert(pupil.copy(syncType = SyncType.ADD, pendingSync = true))
+        }
     }
 
     override suspend fun updatePupil(pupil: Pupil) {
-        val pupilWithSync = pupil.copy(pendingSync = true, syncType = SyncType.UPDATE)
-        pupilDao.upsert(pupilWithSync)
+        if (pupil.remoteId != null) {
+            val res = pupilApi.updatePupil(pupil.remoteId, pupil.toUpdatePupilRequest())
+            if (res.isSuccessful && res.body() != null) {
+                val remotePupil = res.body()!!
+                pupilDao.upsert(
+                    pupil.copy(
+                        remoteId = remotePupil.pupilId,
+                        syncType = null,
+                        pendingSync = false
+                    )
+                )
+            } else if (res.code() == 400) {
+                Timber.d("Validation error updating pupil: ${res.errorBody()?.string()}")
+                pupilDao.upsert(pupil.copy(syncType = SyncType.UPDATE, pendingSync = true))
+            }
+            else if (res.code() == 404) {
+                Timber.d("Pupil not found remotely, adding as new pupil: ${res.errorBody()?.string()}")
+                addPupil(pupil)
+            } else {
+                // Server error, mark for update sync
+                pupilDao.upsert(pupil.copy(syncType = SyncType.UPDATE, pendingSync = true))
+            }
+        } else {
+            addPupil(pupil)
+        }
     }
 
     override suspend fun deletePupil(pupilId: Int) {
-        pupilDao.markForSync(pupilId, SyncType.DELETE)
+        val pupil = pupilDao.getPupilById(pupilId)
+        if (pupil != null) {
+            if (pupil.remoteId != null) {
+                val res = pupilApi.deletePupil(pupil.remoteId)
+                if (res.isSuccessful) {
+                    pupilDao.deletePupilById(pupilId)
+                } else if(res.code() == 404) {
+                    // If not found remotely, consider it deleted
+                    Timber.d("Pupil not found remotely when deleting, removing locally: ${res.errorBody()?.string()}")
+                    pupilDao.deletePupilById(pupilId)
+                }
+                else {
+                    //Treat as server error, mark for delete sync
+                    Timber.d("Server error deleting pupil: ${res.errorBody()?.string()}")
+                    pupilDao.markForSync(pupilId, SyncType.DELETE)
+                }
+            } else {
+                pupilDao.deletePupilById(pupil.pupilId)
+            }
+        }
     }
 
     override fun startSync() {

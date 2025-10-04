@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface IPupilRepository {
     val pupils: Flow<List<Pupil>>
+    suspend fun getPupilById(pupilId: Int): Pupil?
     suspend fun addPupil(pupil: Pupil)
     suspend fun updatePupil(pupil: Pupil)
     suspend fun deletePupil(pupilId: Int)

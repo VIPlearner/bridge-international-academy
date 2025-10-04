@@ -12,6 +12,7 @@ import com.bridge.androidtechnicaltest.data.network.dto.PupilPageResponse
 import com.bridge.androidtechnicaltest.data.network.dto.PupilResponse
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -38,6 +39,11 @@ class PupilSyncWorkerTest {
         pupilDao = mockk()
         every { appDatabase.pupilDao } returns pupilDao
         testWorkerFactory = TestWorkerFactory(pupilApi, appDatabase)
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
     }
 
     @Test

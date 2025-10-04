@@ -20,6 +20,9 @@ interface PupilDao {
     @Query("SELECT * FROM pupils WHERE pending_sync = 1 OR sync_type IS NOT NULL")
     suspend fun getPendingSyncPupils(): List<Pupil>
 
+    @Query("SELECT * FROM pupils WHERE pupil_id = :pupilId")
+    suspend fun getPupilById(pupilId: Int): Pupil?
+
     @Query("UPDATE pupils SET pending_sync = 1, sync_type = :syncType WHERE pupil_id = :pupilId")
     suspend fun markForSync(pupilId: Int, syncType: SyncType): Int
 
@@ -28,6 +31,9 @@ interface PupilDao {
 
     @Delete
     suspend fun delete(pupil: Pupil): Int
+
+    @Query("DELETE FROM pupils WHERE pupil_id = :pupilId")
+    suspend fun deletePupilById(pupilId: Int): Int
 
     @Query("UPDATE pupils SET name = :name, " +
             "country = :country, " +
