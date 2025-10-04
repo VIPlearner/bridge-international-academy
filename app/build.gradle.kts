@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.bridge.androidtechnicaltest"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -34,16 +34,17 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
 
@@ -93,10 +94,20 @@ dependencies {
     // WorkManager dependencies
     implementation(libs.workmanager)
     implementation(libs.hilt.work)
-    kapt("androidx.hilt:hilt-compiler:1.1.0")
+    kapt(libs.hilt.compiler)
 
-    // Testing dependencies
+    // Timber logging
+    implementation(libs.timber)
+
+    // Test dependencies
     testImplementation(libs.junit)
+    testImplementation(libs.io.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.androidx.work.testing)
+    testImplementation(libs.androidx.arch.core.testing)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.hilt.android.testing)
+    kaptTest(libs.hilt.compiler)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

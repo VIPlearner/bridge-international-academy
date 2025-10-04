@@ -6,9 +6,12 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "pupils")
 data class Pupil(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "pupil_id")
-    val pupilId: Int,
+    val pupilId: Int = -1,
+
+    @ColumnInfo(name = "remote_id")
+    val remoteId: Int? = null,
 
     @ColumnInfo(name = "name")
     val name: String,

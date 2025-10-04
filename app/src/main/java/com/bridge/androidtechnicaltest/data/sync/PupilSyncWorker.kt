@@ -1,42 +1,148 @@
 package com.bridge.androidtechnicaltest.data.sync
 
 import android.content.Context
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.ListenableWorker
 import com.bridge.androidtechnicaltest.data.db.AppDatabase
 import com.bridge.androidtechnicaltest.data.db.dto.Pupil
 import com.bridge.androidtechnicaltest.data.db.dto.SyncType
+import com.bridge.androidtechnicaltest.data.mapper.toCreatePupilRequest
+import com.bridge.androidtechnicaltest.data.mapper.toDbPupil
+import com.bridge.androidtechnicaltest.data.mapper.toUpdatePupilRequest
 import com.bridge.androidtechnicaltest.data.network.PupilApi
-import com.bridge.androidtechnicaltest.data.network.dto.CreatePupilRequest
-import com.bridge.androidtechnicaltest.data.network.dto.UpdatePupilRequest
-import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-class PupilSyncWorker(
-    context: Context,
-    workerParams: WorkerParameters
+@HiltWorker
+class PupilSyncWorker @AssistedInject constructor(
+    @Assisted context: Context,
+    @Assisted workerParams: WorkerParameters,
+    private val database: AppDatabase,
+    private val pupilApi: PupilApi
 ) : CoroutineWorker(context, workerParams) {
 
-    private lateinit var database: AppDatabase
-    private lateinit var pupilApi: PupilApi
+    private val pupilDao = database.pupilDao
 
-    override suspend fun doWork(): ListenableWorker.Result = withContext(Dispatchers.IO) {
+    override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         try {
-            // We'll get dependencies through the Application class
-            val app = applicationContext as? App
-            if (app == null) {
-                return@withContext ListenableWorker.Result.failure()
+            val pupilsToSync = pupilDao.getPendingSyncPupils()
+
+            var allSuccessful = true
+            pupilsToSync.forEach {
+                val success = syncPupil(it)
+                allSuccessful = allSuccessful && success
+            }
+            if (!allSuccessful) {
+                return@withContext Result.retry()
             }
 
-            // For now, we'll create a simple version without dependency injection
-            // to avoid the metadata version issue
-            ListenableWorker.Result.success()
+            if (!fetchAllPupilsFromApi()) {
+                return@withContext Result.retry()
+            }
+
+            Result.success()
         } catch (e: Exception) {
-            ListenableWorker.Result.failure()
+            // Handle exceptions
+            Result.retry()
+        }
+    }
+
+
+    private suspend fun fetchAllPupilsFromApi(): Boolean {
+        val response = pupilApi.getPupils(page = 1)
+
+        if (!response.isSuccessful || response.body() == null) {
+            return false // Retry if the API call fails
+        }
+
+        for (pupil in response.body()!!.items) {
+            pupilDao.updatePupilWithRemoteInfo(
+                pupilId = pupil.pupilId,
+                name = pupil.name,
+                country = pupil.country,
+                image = pupil.image,
+                latitude = pupil.latitude,
+                longitude = pupil.longitude
+            )
+        }
+
+        for (index in 2..response.body()!!.totalPages) {
+            val pagedResponse = pupilApi.getPupils(page = index)
+            if (!pagedResponse.isSuccessful || pagedResponse.body() == null) {
+                return false // Retry if the API call fails
+            }
+            for (pupil in pagedResponse.body()!!.items) {
+                pupilDao.updatePupilWithRemoteInfo(
+                    pupilId = pupil.pupilId,
+                    name = pupil.name,
+                    country = pupil.country,
+                    image = pupil.image,
+                    latitude = pupil.latitude,
+                    longitude = pupil.longitude
+                )
+            }
+        }
+        return true
+    }
+
+    private suspend fun syncPupil(pupil: Pupil): Boolean {
+        if (!pupil.pendingSync || pupil.syncType == null) {
+            return true // No sync needed
+        }
+
+        suspend fun addPupil(pupil: Pupil): Boolean {
+            val response = pupilApi.createPupil(pupil.toCreatePupilRequest())
+            if (response.isSuccessful) {
+                val updatedPupil = pupil.copy(
+                    remoteId = response.body()?.pupilId,
+                    pendingSync = false,
+                    syncType = null
+                )
+                pupilDao.upsert(updatedPupil)
+                return true
+            } else {
+                return false
+            }
+
+        }
+
+        try{
+            when (pupil.syncType) {
+                SyncType.ADD -> {
+                    return addPupil(pupil)
+                }
+                SyncType.UPDATE -> {
+                    val remoteId = pupil.remoteId ?: return addPupil(pupil)
+                    val response = pupilApi.updatePupil(remoteId, pupil.toUpdatePupilRequest())
+                    return if (response.isSuccessful) {
+                        val updatedPupil = pupil.copy(
+                            pendingSync = false,
+                            syncType = null
+                        )
+                        pupilDao.upsert(updatedPupil)
+                        true
+                    } else {
+                        false
+                    }
+                }
+                SyncType.DELETE -> {
+                    val remoteId = pupil.remoteId ?: return true // If no remote ID, consider it deleted
+                    val response = pupilApi.deletePupil(remoteId)
+                    return if (response.isSuccessful) {
+                        pupilDao.delete(pupil)
+                        true
+                    } else {
+                        false
+                    }
+                }
+            }
+        } catch(e: Exception) {
+
+            return false
         }
     }
 }

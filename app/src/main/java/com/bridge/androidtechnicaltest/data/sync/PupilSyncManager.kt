@@ -1,10 +1,13 @@
 package com.bridge.androidtechnicaltest.data.sync
 
 import android.content.Context
+import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.Operation
 import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.concurrent.TimeUnit
@@ -13,7 +16,7 @@ import javax.inject.Singleton
 
 @Singleton
 class PupilSyncManager @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) {
 
     private val workManager = WorkManager.getInstance(context)
@@ -23,16 +26,16 @@ class PupilSyncManager @Inject constructor(
         private const val SYNC_INTERVAL_MINUTES = 30L
     }
 
-    fun startPeriodicSync() {
+    fun startPeriodicSync(): WorkInfo {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
-            .setRequiresBatteryNotLow(true)
             .build()
 
         val syncWorkRequest = PeriodicWorkRequestBuilder<PupilSyncWorker>(
             SYNC_INTERVAL_MINUTES, TimeUnit.MINUTES
         )
             .setConstraints(constraints)
+            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.MINUTES)
             .build()
 
         workManager.enqueueUniquePeriodicWork(
@@ -40,9 +43,11 @@ class PupilSyncManager @Inject constructor(
             ExistingPeriodicWorkPolicy.KEEP,
             syncWorkRequest
         )
+
+        return workManager.getWorkInfoById(syncWorkRequest.id).get()
     }
 
-    fun stopPeriodicSync() {
-        workManager.cancelUniqueWork(SYNC_WORK_NAME)
+    fun stopPeriodicSync(): Operation {
+        return workManager.cancelUniqueWork(SYNC_WORK_NAME)
     }
 }
