@@ -37,9 +37,12 @@ class App : Application(), Configuration.Provider, SingletonImageLoader.Factory 
         pupilRepository.startSync()
     }
 
-    override fun getWorkManagerConfiguration(): Configuration = Configuration.Builder()
-        .setWorkerFactory(workerFactory)
-        .build()
+    override fun getWorkManagerConfiguration(): Configuration {
+        Timber.d("getWorkManagerConfiguration called; workerFactory: $workerFactory")
+        return Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
+    }
 
     override fun newImageLoader(context: Context): ImageLoader {
         return ImageLoader.Builder(context)

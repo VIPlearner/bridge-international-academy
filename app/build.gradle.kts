@@ -92,10 +92,12 @@ dependencies {
     implementation(libs.workmanager)
     implementation(libs.hilt.work)
     kapt(libs.hilt.compiler)
+    kapt(libs.hilt.compiler1)
     implementation(libs.timber)
     implementation(libs.materialKolor)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
 
     // Test dependencies
     testImplementation(libs.junit)
@@ -105,6 +107,7 @@ dependencies {
     testImplementation(libs.androidx.arch.core.testing)
     testImplementation(libs.robolectric)
     testImplementation(libs.hilt.android.testing)
+    testImplementation(libs.coil.test)
     kaptTest(libs.hilt.compiler)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

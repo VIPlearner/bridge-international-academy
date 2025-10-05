@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
+import com.bridge.androidtechnicaltest.ui.navigation.AppNavGraph
 import com.bridge.androidtechnicaltest.ui.theme.TechnicalTestTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -16,10 +17,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TechnicalTestTheme {
                 val navController = rememberNavController()
-
-//                Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
-//                    WeatherNavGraph(navController = navController)
-//                }
+                AppNavGraph(navController = navController)
             }
         }
     }

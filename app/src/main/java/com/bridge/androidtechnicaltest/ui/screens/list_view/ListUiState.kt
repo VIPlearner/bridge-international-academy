@@ -7,13 +7,15 @@ import com.bridge.androidtechnicaltest.domain.entity.PupilWithLocationEntity
 data class PupilItem(
     val id: Int,
     val name: String,
-    val prettyLocation: String
+    val prettyLocation: String,
+    val imageUrl: String
 ) {
     companion object {
         fun fromEntity(entity: PupilWithLocationEntity) = PupilItem(
             id = entity.id,
             name = entity.name,
-            prettyLocation = entity.prettyLocation ?: ""
+            prettyLocation = entity.prettyLocation ?: "",
+            imageUrl = entity.image ?: ""
         )
     }
 }

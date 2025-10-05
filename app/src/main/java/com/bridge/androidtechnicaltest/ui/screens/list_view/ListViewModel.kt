@@ -2,6 +2,7 @@ package com.bridge.androidtechnicaltest.ui.screens.list_view
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bridge.androidtechnicaltest.data.sync.PupilSyncService
 import com.bridge.androidtechnicaltest.domain.SyncState
 import com.bridge.androidtechnicaltest.domain.usecase.GetPupilsUseCase
 import com.bridge.androidtechnicaltest.domain.usecase.GetPupilsWithLocationUseCase
@@ -10,12 +11,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ListViewModel @Inject constructor(
     getPupilsWithLocationUseCase: GetPupilsWithLocationUseCase,
-    getSyncStateUseCase: GetSyncStateUseCase
+    getSyncStateUseCase: GetSyncStateUseCase,
+    private val syncService: PupilSyncService
 ): ViewModel() {
 
     val uiState = combine(
@@ -45,5 +48,10 @@ class ListViewModel @Inject constructor(
             syncState = SyncState.SYNCING
         )
     )
+
+
+    fun syncPupils() = viewModelScope.launch() {
+        syncService.sync()
+    }
 
 }

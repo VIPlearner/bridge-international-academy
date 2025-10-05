@@ -13,6 +13,7 @@ import com.bridge.androidtechnicaltest.data.repository.PupilRepository
 import com.bridge.androidtechnicaltest.data.network.PupilApi
 import com.bridge.androidtechnicaltest.data.network.GeocodingApi
 import com.bridge.androidtechnicaltest.data.sync.PupilSyncManager
+import com.bridge.androidtechnicaltest.utils.NetworkLogger
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,6 +21,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -65,7 +67,10 @@ object NetworkModule {
                 .build()
             chain.proceed(newRequest)
         }
+
+        val loggingInterceptor = HttpLoggingInterceptor(NetworkLogger())
         builder.addInterceptor(requestInterceptor)
+        builder.addInterceptor(loggingInterceptor)
         return builder.build()
     }
 
@@ -116,6 +121,10 @@ object DatabaseModule {
             .fallbackToDestructiveMigration(false)
             .build()
     }
+
+    @Provides
+    @Singleton
+    fun providesPupilDao(database: AppDatabase) = database.pupilDao
 
     @Provides
     @Singleton

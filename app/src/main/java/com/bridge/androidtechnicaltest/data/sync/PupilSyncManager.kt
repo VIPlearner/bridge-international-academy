@@ -26,7 +26,7 @@ class PupilSyncManager @Inject constructor(
         private const val SYNC_INTERVAL_MINUTES = 30L
     }
 
-    fun startPeriodicSync(): WorkInfo {
+    fun startPeriodicSync(): WorkInfo? {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
@@ -35,7 +35,7 @@ class PupilSyncManager @Inject constructor(
             SYNC_INTERVAL_MINUTES, TimeUnit.MINUTES
         )
             .setConstraints(constraints)
-            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.MINUTES)
+            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 5, TimeUnit.SECONDS)
             .build()
 
         workManager.enqueueUniquePeriodicWork(
