@@ -10,11 +10,6 @@ This Android application follows **Clean Architecture** with three layers:
 
 **Key Pattern**: Offline-first with automatic sync via WorkManager every 30 minutes.
 
-## Requirements Status
-
-✅ **View list of pupils** - Compose list with real-time Flow updates  
-✅ **Add new pupil** - Form with validation and location services  
-✅ **Offline support** - Room database + background sync when online  
 
 ## Project Structure
 
