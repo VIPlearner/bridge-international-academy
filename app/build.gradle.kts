@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.detekt)
     kotlin("kapt")
 }
 
