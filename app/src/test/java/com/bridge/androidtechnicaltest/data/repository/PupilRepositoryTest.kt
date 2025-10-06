@@ -88,7 +88,9 @@ class PupilRepositoryTest {
                     pendingSync = false,
                 )
 
-            coEvery { pupilApi.createPupil(localPupil.toCreatePupilRequest()) } returns Response.success(remotePupilResponse)
+            coEvery {
+                pupilApi.createPupil(localPupil.toCreatePupilRequest())
+            } returns Response.success(remotePupilResponse)
             coEvery { pupilDao.upsert(expectedUpdatedPupil) } just Runs
 
             repository.addPupil(localPupil)

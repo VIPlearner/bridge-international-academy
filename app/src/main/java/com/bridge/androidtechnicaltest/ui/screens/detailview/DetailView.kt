@@ -24,6 +24,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,8 +37,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bridge.androidtechnicaltest.domain.entity.PupilEntity
 import com.bridge.androidtechnicaltest.ui.common.ToastHandler
-import com.bridge.androidtechnicaltest.ui.screens.listview.components.ProfileImage
-import com.bridge.androidtechnicaltest.ui.screens.listview.components.PupilFormDialog
+import com.bridge.androidtechnicaltest.ui.screens.common.ProfileImage
+import com.bridge.androidtechnicaltest.ui.screens.common.PupilFormDialog
 
 @Composable
 fun DetailView(
@@ -46,17 +49,19 @@ fun DetailView(
 
     ToastHandler(viewModel.toastEvents)
 
+    val latestOnNavigateBack by rememberUpdatedState(onNavigateBack)
+
+    LaunchedEffect(uiState.value.uiState) {
+        val currentState = uiState.value.uiState
+        if (currentState is DetailUiState.Error) {
+            latestOnNavigateBack()
+        }
+    }
+
     DetailScreen(
         uiState = uiState.value,
         onNavigateBack = onNavigateBack,
-        onShowEditDialog = { viewModel.showEditDialog() },
-        onDismissDialog = { viewModel.dismissDialog() },
-        onUpdatePupil = { name, country, imageUrl, latitude, longitude ->
-            viewModel.updatePupil(name, country, imageUrl, latitude, longitude)
-        },
-        onDeletePupil = {
-            viewModel.deletePupil(onNavigateBack)
-        },
+        onViewEvent = viewModel::onViewEvent,
     )
 }
 
@@ -65,109 +70,165 @@ fun DetailView(
 fun DetailScreen(
     uiState: DetailScreenState,
     onNavigateBack: () -> Unit,
-    onShowEditDialog: () -> Unit,
-    onDismissDialog: () -> Unit,
-    onUpdatePupil: (String, String, String, Double, Double) -> Unit,
-    onDeletePupil: () -> Unit,
+    onViewEvent: (DetailViewEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(
-                title = { Text("Pupil Details") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = onNavigateBack,
-                        modifier = Modifier.testTag("detail_back_button"),
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                        )
-                    }
-                },
-                actions = {
-                    when (uiState.uiState) {
-                        is DetailUiState.Success -> {
-                            IconButton(
-                                onClick = onDeletePupil,
-                                enabled = !uiState.editPupilState.isDeleting,
-                                modifier = Modifier.testTag("detail_delete_button"),
-                            ) {
-                                if (uiState.editPupilState.isDeleting) {
-                                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                                } else {
-                                    Icon(
-                                        imageVector = Icons.Default.Delete,
-                                        contentDescription = "Delete Pupil",
-                                    )
-                                }
-                            }
-                        }
-                        else -> {}
-                    }
-                },
+            DetailTopAppBar(
+                uiState = uiState,
+                onNavigateBack = onNavigateBack,
+                onDeletePupil = { onViewEvent(DetailViewEvent.DeletePupil) },
             )
         },
         floatingActionButton = {
+            DetailFloatingActionButton(
+                uiState = uiState,
+                onShowEditDialog = { onViewEvent(DetailViewEvent.ShowEditDialog) },
+            )
+        },
+    ) { paddingValues ->
+        DetailContent(
+            uiState = uiState,
+            paddingValues = paddingValues,
+        )
+
+        DetailDialog(
+            uiState = uiState,
+            onDismissDialog = { onViewEvent(DetailViewEvent.DismissDialog) },
+            onUpdatePupil = { name, country, imageUrl, latitude, longitude ->
+                onViewEvent(
+                    DetailViewEvent.UpdatePupil(
+                        name = name,
+                        country = country,
+                        image = imageUrl,
+                        latitude = latitude,
+                        longitude = longitude,
+                    ),
+                )
+            },
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DetailTopAppBar(
+    uiState: DetailScreenState,
+    onNavigateBack: () -> Unit,
+    onDeletePupil: () -> Unit,
+) {
+    TopAppBar(
+        title = { Text("Pupil Details") },
+        navigationIcon = {
+            IconButton(
+                onClick = onNavigateBack,
+                modifier = Modifier.testTag("detail_back_button"),
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                )
+            }
+        },
+        actions = {
             when (uiState.uiState) {
                 is DetailUiState.Success -> {
-                    FloatingActionButton(
-                        onClick = onShowEditDialog,
-                        modifier = Modifier.testTag("detail_edit_fab"),
+                    IconButton(
+                        onClick = onDeletePupil,
+                        enabled = !uiState.editPupilState.isDeleting,
+                        modifier = Modifier.testTag("detail_delete_button"),
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit Pupil",
-                        )
+                        if (uiState.editPupilState.isDeleting) {
+                            CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete Pupil",
+                            )
+                        }
                     }
                 }
                 else -> {}
             }
         },
-    ) { paddingValues ->
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-        ) {
-            when (val state = uiState.uiState) {
-                is DetailUiState.Loading -> {
-                    CircularProgressIndicator()
-                }
-                is DetailUiState.Error -> {
-                    Text(
-                        text = state.message,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
-                is DetailUiState.Success -> {
-                    PupilDetailContent(
-                        pupil = state.pupil,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                }
-            }
-        }
+    )
+}
 
-        when (val state = uiState.uiState) {
-            is DetailUiState.Success -> {
-                if (uiState.editPupilState.showDialog) {
-                    PupilFormDialog(
-                        onDismiss = onDismissDialog,
-                        onSave = { name, country, imageUrl, latitude, longitude ->
-                            onUpdatePupil(name, country, imageUrl, latitude, longitude)
-                        },
-                        pupil = state.pupil,
-                        isLoading = uiState.editPupilState.isUpdating,
-                    )
-                }
+@Composable
+private fun DetailFloatingActionButton(
+    uiState: DetailScreenState,
+    onShowEditDialog: () -> Unit,
+) {
+    when (uiState.uiState) {
+        is DetailUiState.Success -> {
+            FloatingActionButton(
+                onClick = onShowEditDialog,
+                modifier = Modifier.testTag("detail_edit_fab"),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Edit Pupil",
+                )
             }
-            else -> {}
         }
+        else -> {}
+    }
+}
+
+@Composable
+private fun DetailContent(
+    uiState: DetailScreenState,
+    paddingValues: androidx.compose.foundation.layout.PaddingValues,
+) {
+    Box(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+    ) {
+        when (val state = uiState.uiState) {
+            is DetailUiState.Loading -> {
+                CircularProgressIndicator()
+            }
+            is DetailUiState.Error -> {
+                Text(
+                    text = state.message,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+            is DetailUiState.Success -> {
+                PupilDetailContent(
+                    pupil = state.pupil,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DetailDialog(
+    uiState: DetailScreenState,
+    onDismissDialog: () -> Unit,
+    onUpdatePupil: (String, String, String, Double, Double) -> Unit,
+) {
+    when (val state = uiState.uiState) {
+        is DetailUiState.Success -> {
+            if (uiState.editPupilState.showDialog) {
+                PupilFormDialog(
+                    onDismiss = onDismissDialog,
+                    onSave = { name, country, imageUrl, latitude, longitude ->
+                        onUpdatePupil(name, country, imageUrl, latitude, longitude)
+                    },
+                    pupil = state.pupil,
+                    isLoading = uiState.editPupilState.isUpdating,
+                )
+            }
+        }
+        else -> {}
     }
 }
 

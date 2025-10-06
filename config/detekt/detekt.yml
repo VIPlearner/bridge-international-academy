@@ -1,5 +1,6 @@
 build:
   maxIssues: 0
+  excludes: [ '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**' ]
   excludeCorrectable: false
   weights:
     # complexity: 2
@@ -43,11 +44,12 @@ output-reports:
   active: true
   exclude:
   # - 'TxtOutputReport'
-  # - 'XmlOutputReport'
+   - 'XmlOutputReport'
   # - 'HtmlOutputReport'
 
 comments:
   active: true
+  excludes: [ '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**' ]
   AbsentOrWrongFileLicense:
     active: false
     licenseTemplateFile: 'license.template'
@@ -77,6 +79,7 @@ comments:
 
 complexity:
   active: true
+  excludes: [ '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**' ]
   ComplexCondition:
     active: true
     threshold: 4
@@ -196,6 +199,7 @@ empty-blocks:
 
 exceptions:
   active: true
+  excludes: [ '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**' ]
   ExceptionRaisedInUnexpectedLocation:
     active: true
     methodNames:
@@ -466,8 +470,8 @@ naming:
     active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
     constantPattern: '[A-Za-z][_A-Za-z0-9]*'
-    propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
-    privatePropertyPattern: '(_)?[A-Za-z][_A-Za-z0-9]*'
+    propertyPattern: '[A-Za-z][_A-ZaZ0-9]*'
+    privatePropertyPattern: '(_)?[A-Za-z][_A-ZaZ0-9]*'
   PackageNaming:
     active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
@@ -476,8 +480,8 @@ naming:
     active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
     constantPattern: '[A-Z][_A-Z0-9]*'
-    propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
-    privatePropertyPattern: '_?[A-Za-z][_A-Za-z0-9]*'
+    propertyPattern: '[A-Za-z][_A-ZaZ0-9]*'
+    privatePropertyPattern: '_?[A-Za-z][_A-ZaZ0-9]*'
   VariableMaxLength:
     active: false
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
@@ -758,7 +762,7 @@ style:
     active: true
   UnusedPrivateMember:
     active: true
-    allowedNames: '(_|ignored|expected|serialVersionUID)'
+    allowedNames: '(_|ignored|expected|serialVersionUID|.*Preview)'
   UseArrayLiteralsInAnnotations:
     active: false
   UseCheckNotNull:

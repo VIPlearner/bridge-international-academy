@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>LongParameterList:ListViewModel.kt$ListViewModel$( pupilId: Int, name: String, country: String, image: String?, latitude: Double, longitude: Double, )</ID>
+    <ID>LongParameterList:PupilDao.kt$PupilDao$( pupilId: Int, name: String, country: String, image: String?, latitude: Double, longitude: Double, )</ID>
+    <ID>MagicNumber:Color.kt$0xFF8DC63F</ID>
+    <ID>MagicNumber:DetailViewModel.kt$DetailViewModel$5_000</ID>
+    <ID>MagicNumber:ListViewModel.kt$ListViewModel$5_000</ID>
+    <ID>MagicNumber:LocationUtils.kt$6371.0</ID>
+    <ID>MagicNumber:ModifierUtils.kt$100f</ID>
+    <ID>MagicNumber:PupilSyncManager.kt$PupilSyncManager$5</ID>
+    <ID>MaxLineLength:Module.kt$DataStoreModule$fun</ID>
+    <ID>ReturnCount:PupilSyncService.kt$PupilSyncService$private suspend fun fetchAllPupilsFromApi(): Boolean</ID>
+    <ID>ReturnCount:PupilSyncService.kt$PupilSyncService$private suspend fun syncPupil(pupil: Pupil): Boolean</ID>
+    <ID>ReturnCount:PupilSyncService.kt$PupilSyncService$suspend fun sync(): Boolean</ID>
+    <ID>TooGenericExceptionCaught:AddPupilUseCase.kt$AddPupilUseCase$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:DeletePupilUseCase.kt$DeletePupilUseCase$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GetPupilsWithLocationUseCase.kt$GetPupilsWithLocationUseCase$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:LocationResolver.kt$LocationResolver$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:PupilRepository.kt$PupilRepository$ex: Exception</ID>
+    <ID>TooGenericExceptionCaught:PupilSyncService.kt$PupilSyncService$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:PupilSyncWorker.kt$PupilSyncWorker$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:UpdatePupilUseCase.kt$UpdatePupilUseCase$e: Exception</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$val SeedColor = Color(0xFF8DC63F)</ID>
+    <ID>TopLevelPropertyNaming:Module.kt$private val Context.dataStore: DataStore&lt;Preferences&gt; by preferencesDataStore( name = DataStoreConstants.PREFERENCES_DATASTORE_NAME, )</ID>
+    <ID>TopLevelPropertyNaming:Type.kt$val Typography = Typography( bodyLarge = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 16.sp, lineHeight = 24.sp, letterSpacing = 0.5.sp, ), )</ID>
+  </CurrentIssues>
+</SmellBaseline>

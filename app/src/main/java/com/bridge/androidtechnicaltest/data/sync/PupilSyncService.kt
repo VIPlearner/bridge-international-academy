@@ -19,6 +19,12 @@ class PupilSyncService
         private val pupilApi: PupilApi,
         private val dataStoreRepository: DataStoreRepository,
     ) {
+        companion object {
+            private const val FIRST_PAGE = 1
+            private const val SECOND_PAGE = 2
+            private const val HTTP_NOT_FOUND = 404
+        }
+
         private suspend fun isSyncing(): Boolean = dataStoreRepository.getPupilSyncState().first() == SyncState.SYNCING
 
         suspend fun sync(): Boolean {
@@ -50,6 +56,7 @@ class PupilSyncService
                 dataStoreRepository.setPupilSyncState(SyncState.UP_TO_DATE)
                 return true
             } catch (e: Exception) {
+                Timber.e(e, "Error during pupil sync")
                 dataStoreRepository.setPupilSyncState(SyncState.OUT_OF_DATE)
                 return false
             }
@@ -57,9 +64,9 @@ class PupilSyncService
 
         private suspend fun fetchAllPupilsFromApi(): Boolean {
             pupilDao.deleteAll()
-            val response = pupilApi.getPupils(page = 1)
+            val response = pupilApi.getPupils(page = FIRST_PAGE)
 
-            if (response.code() == 404) {
+            if (response.code() == HTTP_NOT_FOUND) {
                 // no pupils on server
                 return true
             }
@@ -81,9 +88,9 @@ class PupilSyncService
                 )
             }
 
-            for (index in 2..response.body()!!.totalPages) {
+            for (index in SECOND_PAGE..response.body()!!.totalPages) {
                 val pagedResponse = pupilApi.getPupils(page = index)
-                if (pagedResponse.code() == 404) {
+                if (pagedResponse.code() == HTTP_NOT_FOUND) {
                     // no more pupils on server
                     break
                 }
@@ -161,6 +168,7 @@ class PupilSyncService
                     }
                 }
             } catch (e: Exception) {
+                Timber.e(e, "Error syncing pupil id=${pupil.pupilId}, syncType=${pupil.syncType}")
                 return false
             }
         }

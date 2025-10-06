@@ -20,6 +20,11 @@ class LocationResolver
     ) {
         companion object {
             private const val CACHE_RADIUS_KM = 1.0
+            private const val CACHE_RETENTION_DAYS = 30
+            private const val HOURS_PER_DAY = 24
+            private const val MINUTES_PER_HOUR = 60
+            private const val SECONDS_PER_MINUTE = 60
+            private const val MILLISECONDS_PER_SECOND = 1000L
         }
 
         /**
@@ -133,7 +138,12 @@ class LocationResolver
          */
         suspend fun cleanupOldCache() {
             try {
-                val thirtyDaysAgo = System.currentTimeMillis() - (30 * 24 * 60 * 60 * 1000L)
+                val thirtyDaysAgo =
+                    System.currentTimeMillis() -
+                        (
+                            CACHE_RETENTION_DAYS * HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE
+                                * MILLISECONDS_PER_SECOND
+                        )
                 locationCacheDao.deleteOldEntries(thirtyDaysAgo)
             } catch (e: Exception) {
                 Timber.e(e, "Error cleaning up old cache")

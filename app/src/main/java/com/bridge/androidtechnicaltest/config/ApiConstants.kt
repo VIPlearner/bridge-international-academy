@@ -12,5 +12,7 @@ object ApiConstants {
      * This key is read from local.properties at build time and exposed through BuildConfig.
      * The actual key value is not stored in source code for security.
      */
-    val GEOCODING_API_KEY: String = BuildConfig.GEOCODING_API_KEY
+    const val GEOCODING_API_KEY: String = BuildConfig.GEOCODING_API_KEY
+
+    const val PUPIL_API_REQUEST_ID = BuildConfig.PUPIL_API_REQUEST_ID
 }

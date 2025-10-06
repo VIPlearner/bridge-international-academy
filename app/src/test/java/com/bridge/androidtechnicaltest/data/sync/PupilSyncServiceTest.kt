@@ -248,14 +248,33 @@ class PupilSyncServiceTest {
             val pendingPupils =
                 listOf(
                     createTestPupil(pupilId = 1, name = "Add Me", pendingSync = true, syncType = SyncType.ADD),
-                    createTestPupil(pupilId = 2, remoteId = 200, name = "Update Me", pendingSync = true, syncType = SyncType.UPDATE),
-                    createTestPupil(pupilId = 3, remoteId = 300, name = "Delete Me", pendingSync = true, syncType = SyncType.DELETE),
+                    createTestPupil(
+                        pupilId = 2,
+                        remoteId = 200,
+                        name = "Update Me",
+                        pendingSync = true,
+                        syncType = SyncType.UPDATE,
+                    ),
+                    createTestPupil(
+                        pupilId = 3,
+                        remoteId = 300,
+                        name = "Delete Me",
+                        pendingSync = true,
+                        syncType = SyncType.DELETE,
+                    ),
                 )
 
             coEvery { pupilDao.getPendingSyncPupils() } returns pendingPupils
             coEvery { pupilApi.createPupil(any()) } returns
                 Response.success(
-                    PupilResponse(pupilId = 102, name = "Add Me", country = "UK", image = null, latitude = 51.5074, longitude = -0.1278),
+                    PupilResponse(
+                        pupilId = 102,
+                        name = "Add Me",
+                        country = "UK",
+                        image = null,
+                        latitude = 51.5074,
+                        longitude = -0.1278,
+                    ),
                 )
             coEvery { pupilApi.updatePupil(200, any()) } returns
                 Response.success(
@@ -273,7 +292,12 @@ class PupilSyncServiceTest {
             coEvery { pupilDao.delete(any()) } returns 1
             coEvery { pupilApi.getPupils(page = 1) } returns
                 Response.success(
-                    PupilPageResponse(items = emptyList(), pageNumber = 1, itemCount = 0, totalPages = 1),
+                    PupilPageResponse(
+                        items = emptyList(),
+                        pageNumber = 1,
+                        itemCount = 0,
+                        totalPages = 1,
+                    ),
                 )
 
             val result = pupilSyncService.sync()

@@ -17,6 +17,22 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+sealed class DetailViewEvent {
+    object ShowEditDialog : DetailViewEvent()
+
+    object DismissDialog : DetailViewEvent()
+
+    data class UpdatePupil(
+        val name: String,
+        val country: String,
+        val image: String?,
+        val latitude: Double,
+        val longitude: Double,
+    ) : DetailViewEvent()
+
+    object DeletePupil : DetailViewEvent()
+}
+
 @HiltViewModel
 class DetailViewModel
     @Inject
@@ -49,15 +65,31 @@ class DetailViewModel
                 DetailScreenState(uiState = DetailUiState.Loading),
             )
 
-        fun showEditDialog() {
+        fun onViewEvent(event: DetailViewEvent) {
+            when (event) {
+                is DetailViewEvent.ShowEditDialog -> showEditDialog()
+                is DetailViewEvent.DismissDialog -> dismissDialog()
+                is DetailViewEvent.UpdatePupil ->
+                    updatePupil(
+                        event.name,
+                        event.country,
+                        event.image,
+                        event.latitude,
+                        event.longitude,
+                    )
+                is DetailViewEvent.DeletePupil -> deletePupil()
+            }
+        }
+
+        private fun showEditDialog() {
             editPupilState.value = editPupilState.value.copy(showDialog = true)
         }
 
-        fun dismissDialog() {
+        private fun dismissDialog() {
             editPupilState.value = editPupilState.value.copy(showDialog = false)
         }
 
-        fun updatePupil(
+        private fun updatePupil(
             name: String,
             country: String,
             image: String?,
@@ -89,7 +121,7 @@ class DetailViewModel
             }
         }
 
-        fun deletePupil(onDeleted: () -> Unit) =
+        private fun deletePupil() =
             viewModelScope.launch {
                 editPupilState.value = editPupilState.value.copy(isDeleting = true)
 
@@ -97,7 +129,7 @@ class DetailViewModel
                 when (result) {
                     is Result.Success -> {
                         showSuccessToast("Pupil deleted successfully!")
-                        onDeleted()
+                        // Note: Navigation back will be handled in the view
                     }
                     else -> {
                         showErrorToast("Failed to delete pupil. Please try again.")

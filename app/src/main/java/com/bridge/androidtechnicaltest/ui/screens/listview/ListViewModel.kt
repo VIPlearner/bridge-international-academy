@@ -18,6 +18,22 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+sealed class ListViewEvent {
+    object Sync : ListViewEvent()
+
+    object ShowAddDialog : ListViewEvent()
+
+    object DismissDialog : ListViewEvent()
+
+    data class AddPupil(
+        val name: String,
+        val country: String,
+        val image: String?,
+        val latitude: Double,
+        val longitude: Double,
+    ) : ListViewEvent()
+}
+
 @HiltViewModel
 class ListViewModel
     @Inject
@@ -28,14 +44,14 @@ class ListViewModel
         getSyncStateUseCase: GetSyncStateUseCase,
         private val syncService: PupilSyncService,
     ) : BaseViewModel() {
-        private val _addOrEditPupilState = MutableStateFlow(AddorEditPupilState())
+        private val addOrEditPupilState = MutableStateFlow(AddorEditPupilState())
 
         val uiState =
             combine(
                 getPupilsWithLocationUseCase(),
                 getSyncStateUseCase(),
-                _addOrEditPupilState,
-            ) { pupils, syncState, addOrEditPupilState ->
+                addOrEditPupilState,
+            ) { pupils, syncState, addOrEditPupilState_ ->
                 val listState =
                     if (pupils.isEmpty() && syncState == SyncState.SYNCING) {
                         ListUiState.Loading
@@ -49,7 +65,7 @@ class ListViewModel
                         )
                     }
                 ListScreenState(
-                    addorEditPupilState = addOrEditPupilState,
+                    addorEditPupilState = addOrEditPupilState_,
                     uiState = listState,
                     syncState = syncState,
                 )
@@ -63,7 +79,23 @@ class ListViewModel
                 ),
             )
 
-        fun syncPupils() =
+        fun onViewEvent(event: ListViewEvent) {
+            when (event) {
+                is ListViewEvent.Sync -> syncPupils()
+                is ListViewEvent.ShowAddDialog -> showAddDialog()
+                is ListViewEvent.DismissDialog -> dismissDialog()
+                is ListViewEvent.AddPupil ->
+                    addPupil(
+                        event.name,
+                        event.country,
+                        event.image,
+                        event.latitude,
+                        event.longitude,
+                    )
+            }
+        }
+
+        private fun syncPupils() =
             viewModelScope.launch {
                 if (syncService.sync()) {
                     showSuccessToast("Sync completed successfully")
@@ -72,19 +104,19 @@ class ListViewModel
                 }
             }
 
-        fun showAddDialog() {
-            _addOrEditPupilState.value =
-                _addOrEditPupilState.value.copy(
+        private fun showAddDialog() {
+            addOrEditPupilState.value =
+                addOrEditPupilState.value.copy(
                     showDialog = true,
                     pupil = null,
                 )
         }
 
-        fun dismissDialog() {
-            _addOrEditPupilState.value = AddorEditPupilState()
+        private fun dismissDialog() {
+            addOrEditPupilState.value = AddorEditPupilState()
         }
 
-        fun addPupil(
+        private fun addPupil(
             name: String,
             country: String,
             image: String?,
@@ -100,8 +132,8 @@ class ListViewModel
                     longitude = longitude,
                 )
 
-            _addOrEditPupilState.value =
-                _addOrEditPupilState.value.copy(
+            addOrEditPupilState.value =
+                addOrEditPupilState.value.copy(
                     isUpdating = true,
                     pupil = pupilEntity,
                 )
@@ -120,12 +152,12 @@ class ListViewModel
             when (res) {
                 is Result.Success -> {
                     showSuccessToast("Pupil added successfully!")
-                    _addOrEditPupilState.value = AddorEditPupilState()
+                    addOrEditPupilState.value = AddorEditPupilState()
                 }
                 else -> {
                     showErrorToast("Failed to add pupil. Please try again.")
-                    _addOrEditPupilState.value =
-                        _addOrEditPupilState.value.copy(
+                    addOrEditPupilState.value =
+                        addOrEditPupilState.value.copy(
                             isUpdating = false,
                         )
                 }
@@ -140,8 +172,8 @@ class ListViewModel
             latitude: Double,
             longitude: Double,
         ) = viewModelScope.launch {
-            _addOrEditPupilState.value =
-                _addOrEditPupilState.value.copy(
+            addOrEditPupilState.value =
+                addOrEditPupilState.value.copy(
                     isUpdating = true,
                 )
 
@@ -159,12 +191,12 @@ class ListViewModel
             when (result) {
                 is Result.Success -> {
                     showSuccessToast("Pupil updated successfully!")
-                    _addOrEditPupilState.value = AddorEditPupilState()
+                    addOrEditPupilState.value = AddorEditPupilState()
                 }
                 else -> {
                     showErrorToast("Failed to update pupil. Please try again.")
-                    _addOrEditPupilState.value =
-                        _addOrEditPupilState.value.copy(
+                    addOrEditPupilState.value =
+                        addOrEditPupilState.value.copy(
                             isUpdating = false,
                         )
                 }

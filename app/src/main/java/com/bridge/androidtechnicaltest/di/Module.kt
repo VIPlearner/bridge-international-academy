@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
+import com.bridge.androidtechnicaltest.config.ApiConstants
 import com.bridge.androidtechnicaltest.data.datastore.DataStoreConstants
 import com.bridge.androidtechnicaltest.data.datastore.DataStoreRepository
 import com.bridge.androidtechnicaltest.data.db.AppDatabase
@@ -56,7 +57,6 @@ object NetworkModule {
         builder.writeTimeout(API_TIMEOUT, TimeUnit.SECONDS)
         builder.connectTimeout(API_TIMEOUT, TimeUnit.SECONDS)
 
-        val requestId = "dda7feeb-20af-415e-887e-afc43f245624"
         val userAgent = "Bridge Android Tech Test"
         val requestInterceptor =
             Interceptor { chain ->
@@ -64,7 +64,7 @@ object NetworkModule {
                 val newRequest =
                     originalRequest
                         .newBuilder()
-                        .addHeader("X-Request-ID", requestId)
+                        .addHeader("X-Request-ID", ApiConstants.PUPIL_API_REQUEST_ID)
                         .addHeader("User-Agent", userAgent)
                         .build()
                 chain.proceed(newRequest)
@@ -80,6 +80,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @PupilRetrofit
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
         Retrofit
             .Builder()
@@ -91,7 +92,9 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun providePupilApi(retrofit: Retrofit): PupilApi = retrofit.create(PupilApi::class.java)
+    fun providePupilApi(
+        @PupilRetrofit retrofit: Retrofit,
+    ): PupilApi = retrofit.create(PupilApi::class.java)
 
     @Provides
     @Singleton

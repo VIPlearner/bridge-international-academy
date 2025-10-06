@@ -1,4 +1,4 @@
-package com.bridge.androidtechnicaltest.ui.screens.listview.components
+package com.bridge.androidtechnicaltest.ui.screens.common
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box

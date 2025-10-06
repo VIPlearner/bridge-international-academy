@@ -20,6 +20,11 @@ class PupilRepository
         private val pupilApi: PupilApi,
         private val syncManager: PupilSyncManager,
     ) : IPupilRepository {
+        companion object {
+            private const val HTTP_BAD_REQUEST = 400
+            private const val HTTP_NOT_FOUND = 404
+        }
+
         private val pupilDao = database.pupilDao
 
         override val pupils: Flow<List<Pupil>>
@@ -45,7 +50,7 @@ class PupilRepository
                         pendingSync = false,
                     ),
                 )
-            } else if (res?.code() == 400) {
+            } else if (res?.code() == HTTP_BAD_REQUEST) {
                 Timber.d("Validation error adding pupil: ${res.errorBody()?.string()}")
                 pupilDao.upsert(pupil.copy(syncType = SyncType.ADD, pendingSync = true))
             } else {
@@ -74,10 +79,10 @@ class PupilRepository
                             pendingSync = false,
                         ),
                     )
-                } else if (res?.code() == 400) {
+                } else if (res?.code() == HTTP_BAD_REQUEST) {
                     Timber.d("Validation error updating pupil: ${res.errorBody()?.string()}")
                     pupilDao.upsert(pupil.copy(syncType = SyncType.UPDATE, pendingSync = true))
-                } else if (res?.code() == 404) {
+                } else if (res?.code() == HTTP_NOT_FOUND) {
                     Timber.d("Pupil not found remotely, adding as new pupil: ${res.errorBody()?.string()}")
                     addPupil(pupil)
                 } else {
@@ -102,9 +107,12 @@ class PupilRepository
                         }
                     if (res?.isSuccessful == true) {
                         pupilDao.deletePupilById(pupilId)
-                    } else if (res?.code() == 404) {
+                    } else if (res?.code() == HTTP_NOT_FOUND) {
                         // If not found remotely, consider it deleted
-                        Timber.d("Pupil not found remotely when deleting, removing locally: ${res.errorBody()?.string()}")
+                        Timber.d(
+                            "Pupil not found remotely when deleting, " +
+                                "removing locally: ${res.errorBody()?.string()}",
+                        )
                         pupilDao.deletePupilById(pupilId)
                     } else {
                         // Treat as server error, mark for delete sync

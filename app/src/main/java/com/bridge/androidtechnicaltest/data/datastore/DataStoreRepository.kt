@@ -7,6 +7,7 @@ import com.bridge.androidtechnicaltest.domain.SyncState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -60,6 +61,7 @@ class DataStoreRepository
                 try {
                     stateString?.let { SyncState.valueOf(it) } ?: SyncState.OUT_OF_DATE
                 } catch (e: IllegalArgumentException) {
+                    Timber.e(e, "Invalid sync state value: $stateString, defaulting to OUT_OF_DATE")
                     SyncState.OUT_OF_DATE
                 }
             }

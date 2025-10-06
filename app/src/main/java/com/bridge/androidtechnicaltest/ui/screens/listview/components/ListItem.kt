@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bridge.androidtechnicaltest.ui.screens.common.ProfileImage
 import com.bridge.androidtechnicaltest.utils.shimmerLoading
 
 @Composable

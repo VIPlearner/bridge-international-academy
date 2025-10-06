@@ -33,8 +33,10 @@ android {
         }
 
         val geocodingApiKey = localProperties.getProperty("GEOCODING_API_KEY", "")
+        val pupilApiRequestId = localProperties.getProperty("PUPIL_API_REQUEST_ID", "")
 
         buildConfigField("String", "GEOCODING_API_KEY", "\"$geocodingApiKey\"")
+        buildConfigField("String", "PUPIL_API_REQUEST_ID", "\"$pupilApiRequestId\"")
     }
 
     buildTypes {
@@ -66,6 +68,10 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+}
+
+detekt {
+    baseline = file("$rootDir/app/detekt-baseline.xml") // Adjust path as needed
 }
 
 ktlint {

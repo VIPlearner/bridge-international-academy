@@ -78,15 +78,43 @@ class LocationResolverTest {
                     state = "NY",
                 )
 
-            coEvery { locationCacheDao.findNearby(any(), any(), any(), any()) } returns emptyList()
-            coEvery { geocodingApi.reverseGeocode(lat, lng, 1, any()) } returns Response.success(listOf(geocodingResponse))
+            coEvery {
+                locationCacheDao.findNearby(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                )
+            } returns emptyList()
+            coEvery {
+                geocodingApi.reverseGeocode(
+                    lat,
+                    lng,
+                    1,
+                    any(),
+                )
+            } returns Response.success(listOf(geocodingResponse))
             coEvery { locationCacheDao.upsert(any()) } just Runs
 
             val result = locationResolver.getPrettyLocation(lat, lng)
 
             assertEquals("New York, NY, US", result)
-            coVerify { locationCacheDao.findNearby(any(), any(), any(), any()) }
-            coVerify { geocodingApi.reverseGeocode(lat, lng, 1, any()) }
+            coVerify {
+                locationCacheDao.findNearby(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                )
+            }
+            coVerify {
+                geocodingApi.reverseGeocode(
+                    lat,
+                    lng,
+                    1,
+                    any(),
+                )
+            }
             coVerify { locationCacheDao.upsert(any()) }
         }
 
@@ -106,8 +134,22 @@ class LocationResolverTest {
                 )
             val cachedEntitySlot = slot<LocationCacheEntity>()
 
-            coEvery { locationCacheDao.findNearby(any(), any(), any(), any()) } returns emptyList()
-            coEvery { geocodingApi.reverseGeocode(lat, lng, 1, any()) } returns Response.success(listOf(geocodingResponse))
+            coEvery {
+                locationCacheDao.findNearby(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                )
+            } returns emptyList()
+            coEvery {
+                geocodingApi.reverseGeocode(
+                    lat,
+                    lng,
+                    1,
+                    any(),
+                )
+            } returns Response.success(listOf(geocodingResponse))
             coEvery { locationCacheDao.upsert(capture(cachedEntitySlot)) } just Runs
 
             locationResolver.getPrettyLocation(lat, lng)
@@ -124,8 +166,22 @@ class LocationResolverTest {
             val lat = 40.7128
             val lng = -74.0060
 
-            coEvery { locationCacheDao.findNearby(any(), any(), any(), any()) } returns emptyList()
-            coEvery { geocodingApi.reverseGeocode(lat, lng, 1, any()) } returns Response.success(emptyList())
+            coEvery {
+                locationCacheDao.findNearby(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                )
+            } returns emptyList()
+            coEvery {
+                geocodingApi.reverseGeocode(
+                    lat,
+                    lng,
+                    1,
+                    any(),
+                )
+            } returns Response.success(emptyList())
 
             val result = locationResolver.getPrettyLocation(lat, lng)
 
@@ -139,8 +195,22 @@ class LocationResolverTest {
             val lat = 40.7128
             val lng = -74.0060
 
-            coEvery { locationCacheDao.findNearby(any(), any(), any(), any()) } returns emptyList()
-            coEvery { geocodingApi.reverseGeocode(lat, lng, 1, any()) } returns Response.error(404, "".toByteArray().toResponseBody())
+            coEvery {
+                locationCacheDao.findNearby(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                )
+            } returns emptyList()
+            coEvery {
+                geocodingApi.reverseGeocode(
+                    lat,
+                    lng,
+                    1,
+                    any(),
+                )
+            } returns Response.error(404, "".toByteArray().toResponseBody())
 
             val result = locationResolver.getPrettyLocation(lat, lng)
 
@@ -163,8 +233,22 @@ class LocationResolverTest {
                     state = "New York",
                 )
 
-            coEvery { locationCacheDao.findNearby(any(), any(), any(), any()) } returns emptyList()
-            coEvery { geocodingApi.reverseGeocode(lat, lng, 1, any()) } returns Response.success(listOf(geocodingResponse))
+            coEvery {
+                locationCacheDao.findNearby(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                )
+            } returns emptyList()
+            coEvery {
+                geocodingApi.reverseGeocode(
+                    lat,
+                    lng,
+                    1,
+                    any(),
+                )
+            } returns Response.success(listOf(geocodingResponse))
             coEvery { locationCacheDao.upsert(any()) } just Runs
 
             val result = locationResolver.getPrettyLocation(lat, lng)
@@ -187,8 +271,22 @@ class LocationResolverTest {
                     state = "",
                 )
 
-            coEvery { locationCacheDao.findNearby(any(), any(), any(), any()) } returns emptyList()
-            coEvery { geocodingApi.reverseGeocode(lat, lng, 1, any()) } returns Response.success(listOf(geocodingResponse))
+            coEvery {
+                locationCacheDao.findNearby(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                )
+            } returns emptyList()
+            coEvery {
+                geocodingApi.reverseGeocode(
+                    lat,
+                    lng,
+                    1,
+                    any(),
+                )
+            } returns Response.success(listOf(geocodingResponse))
             coEvery { locationCacheDao.upsert(any()) } just Runs
 
             val result = locationResolver.getPrettyLocation(lat, lng)
@@ -219,8 +317,22 @@ class LocationResolverTest {
                     state = "NY",
                 )
 
-            coEvery { locationCacheDao.findNearby(any(), any(), any(), any()) } returns listOf(farCachedEntity)
-            coEvery { geocodingApi.reverseGeocode(lat, lng, 1, any()) } returns Response.success(listOf(geocodingResponse))
+            coEvery {
+                locationCacheDao.findNearby(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                )
+            } returns listOf(farCachedEntity)
+            coEvery {
+                geocodingApi.reverseGeocode(
+                    lat,
+                    lng,
+                    1,
+                    any(),
+                )
+            } returns Response.success(listOf(geocodingResponse))
             coEvery { locationCacheDao.upsert(any()) } just Runs
 
             val result = locationResolver.getPrettyLocation(lat, lng)
@@ -235,7 +347,14 @@ class LocationResolverTest {
             val lat = 40.7128
             val lng = -74.0060
 
-            coEvery { locationCacheDao.findNearby(any(), any(), any(), any()) } throws RuntimeException("Database error")
+            coEvery {
+                locationCacheDao.findNearby(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                )
+            } throws RuntimeException("Database error")
 
             val result = locationResolver.getPrettyLocation(lat, lng)
 

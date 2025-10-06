@@ -6,6 +6,7 @@ import com.bridge.androidtechnicaltest.domain.entity.PupilWithLocationEntity
 import com.bridge.androidtechnicaltest.domain.mapper.toDomainEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import javax.inject.Inject
 
 class GetPupilsWithLocationUseCase
@@ -22,6 +23,7 @@ class GetPupilsWithLocationUseCase
                         try {
                             locationResolver.getPrettyLocation(pupil.latitude, pupil.longitude)
                         } catch (e: Exception) {
+                            Timber.e(e, "Error resolving location for pupil id=${pupil.pupilId}")
                             null
                         }
 

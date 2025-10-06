@@ -30,9 +30,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bridge.androidtechnicaltest.R
 import com.bridge.androidtechnicaltest.ui.common.ToastHandler
+import com.bridge.androidtechnicaltest.ui.screens.common.PupilFormDialog
 import com.bridge.androidtechnicaltest.ui.screens.listview.components.ListItem
 import com.bridge.androidtechnicaltest.ui.screens.listview.components.PlaceholderListItem
-import com.bridge.androidtechnicaltest.ui.screens.listview.components.PupilFormDialog
 
 @Composable
 fun ListView(
@@ -46,12 +46,7 @@ fun ListView(
     ListScreen(
         uiState = uiState.value,
         onPupilClick = { pupilId -> onPupilClick(pupilId.toString()) },
-        onSync = { viewModel.syncPupils() },
-        onShowAddDialog = { viewModel.showAddDialog() },
-        onDismissDialog = { viewModel.dismissDialog() },
-        onSavePupil = { name, country, imageUrl, latitude, longitude ->
-            viewModel.addPupil(name, country, imageUrl, latitude, longitude)
-        },
+        onViewEvent = viewModel::onViewEvent,
     )
 }
 
@@ -60,104 +55,166 @@ fun ListView(
 fun ListScreen(
     uiState: ListScreenState,
     onPupilClick: (pupilId: Int) -> Unit,
-    onSync: () -> Unit,
-    onShowAddDialog: () -> Unit,
-    onDismissDialog: () -> Unit,
-    onSavePupil: (String, String, String, Double, Double) -> Unit,
+    onViewEvent: (ListViewEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
+        modifier = modifier,
         topBar = {
-            TopAppBar(
-                navigationIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.banner),
-                        contentDescription = null,
-                        modifier = Modifier,
-                        tint = Color.Unspecified,
-                    )
-                },
-                title = {
-                    Text(text = "Bridge International")
-                },
-                actions = {
-                    when (uiState.syncState) {
-                        com.bridge.androidtechnicaltest.domain.SyncState.SYNCING -> {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                            )
-                        }
-                        else -> {
-                            IconButton(onClick = onSync) {
-                                Icon(
-                                    imageVector = Icons.Default.Sync,
-                                    contentDescription = "Sync",
-                                )
-                            }
-                        }
-                    }
-                },
+            ListTopAppBar(
+                syncState = uiState.syncState,
+                onSync = { onViewEvent(ListViewEvent.Sync) },
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = onShowAddDialog,
-                modifier = Modifier.testTag("add_pupil_fab"),
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add Pupil",
-                )
-            }
+            ListFloatingActionButton(
+                onShowAddDialog = { onViewEvent(ListViewEvent.ShowAddDialog) },
+            )
         },
     ) { paddingValues ->
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-            contentAlignment = Alignment.Center,
-        ) {
-            when (uiState.uiState) {
-                is ListUiState.Loading -> {
-                    PlaceholderListView()
-                }
-                is ListUiState.Empty -> {
-                    Text(
-                        text = "No pupils available.",
-                        modifier = Modifier.testTag("no_pupils_text"),
+        ListContent(
+            uiState = uiState,
+            onPupilClick = onPupilClick,
+            onSync = { onViewEvent(ListViewEvent.Sync) },
+            paddingValues = paddingValues,
+        )
+
+        ListDialog(
+            uiState = uiState,
+            onDismissDialog = { onViewEvent(ListViewEvent.DismissDialog) },
+            onSavePupil = { name, country, imageUrl, latitude, longitude ->
+                onViewEvent(
+                    ListViewEvent.AddPupil(
+                        name = name,
+                        country = country,
+                        image = imageUrl,
+                        latitude = latitude,
+                        longitude = longitude,
+                    ),
+                )
+            },
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ListTopAppBar(
+    syncState: com.bridge.androidtechnicaltest.domain.SyncState,
+    onSync: () -> Unit,
+) {
+    TopAppBar(
+        navigationIcon = {
+            Icon(
+                painter = painterResource(R.drawable.banner),
+                contentDescription = null,
+                modifier = Modifier,
+                tint = Color.Unspecified,
+            )
+        },
+        title = {
+            Text(text = "Bridge International")
+        },
+        actions = {
+            when (syncState) {
+                com.bridge.androidtechnicaltest.domain.SyncState.SYNCING -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
                     )
                 }
-                is ListUiState.Success -> {
-                    PupilListView(
-                        pupils = uiState.uiState.pupils,
-                        onPupilClick = onPupilClick,
-                    )
-                }
-                is ListUiState.Error -> {
-                    Column {
-                        Text(text = "Error: ${uiState.uiState.message}")
-                        TextButton(
-                            onClick = {
-                                onSync()
-                            },
-                        ) {
-                            Text(text = "Retry")
-                        }
+                else -> {
+                    IconButton(onClick = onSync) {
+                        Icon(
+                            imageVector = Icons.Default.Sync,
+                            contentDescription = "Sync",
+                        )
                     }
                 }
             }
-        }
+        },
+    )
+}
 
-        if (uiState.addorEditPupilState.showDialog) {
-            PupilFormDialog(
-                onDismiss = onDismissDialog,
-                onSave = { name, country, imageUrl, latitude, longitude ->
-                    onSavePupil(name, country, imageUrl, latitude, longitude)
-                },
-                isLoading = uiState.addorEditPupilState.isUpdating,
-            )
+@Composable
+private fun ListFloatingActionButton(onShowAddDialog: () -> Unit) {
+    FloatingActionButton(
+        onClick = onShowAddDialog,
+        modifier = Modifier.testTag("add_pupil_fab"),
+    ) {
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = "Add Pupil",
+        )
+    }
+}
+
+@Composable
+private fun ListContent(
+    uiState: ListScreenState,
+    onPupilClick: (pupilId: Int) -> Unit,
+    onSync: () -> Unit,
+    paddingValues: androidx.compose.foundation.layout.PaddingValues,
+) {
+    Box(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+        contentAlignment = Alignment.Center,
+    ) {
+        when (uiState.uiState) {
+            is ListUiState.Loading -> {
+                PlaceholderListView()
+            }
+            is ListUiState.Empty -> {
+                Text(
+                    text = "No pupils available.",
+                    modifier = Modifier.testTag("no_pupils_text"),
+                )
+            }
+            is ListUiState.Success -> {
+                PupilListView(
+                    pupils = uiState.uiState.pupils,
+                    onPupilClick = onPupilClick,
+                )
+            }
+            is ListUiState.Error -> {
+                ListErrorView(
+                    message = uiState.uiState.message,
+                    onRetry = onSync,
+                )
+            }
         }
+    }
+}
+
+@Composable
+private fun ListErrorView(
+    message: String,
+    onRetry: () -> Unit,
+) {
+    Column {
+        Text(text = "Error: $message")
+        TextButton(onClick = onRetry) {
+            Text(text = "Retry")
+        }
+    }
+}
+
+@Composable
+private fun ListDialog(
+    uiState: ListScreenState,
+    onDismissDialog: () -> Unit,
+    onSavePupil: (String, String, String, Double, Double) -> Unit,
+) {
+    if (uiState.addorEditPupilState.showDialog) {
+        PupilFormDialog(
+            onDismiss = onDismissDialog,
+            onSave = { name, country, imageUrl, latitude, longitude ->
+                onSavePupil(name, country, imageUrl, latitude, longitude)
+            },
+            isLoading = uiState.addorEditPupilState.isUpdating,
+        )
     }
 }
 

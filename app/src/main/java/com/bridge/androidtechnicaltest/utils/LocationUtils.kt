@@ -4,13 +4,7 @@ import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
-
-data class BoundingBox(
-    val minLat: Double,
-    val maxLat: Double,
-    val minLng: Double,
-    val maxLng: Double,
-)
+import kotlin.math.sqrt
 
 fun boundingBox(
     lat: Double,
@@ -58,3 +52,10 @@ fun distanceKm(
 
     return earthRadiusKm * c
 }
+
+data class BoundingBox(
+    val minLat: Double,
+    val maxLat: Double,
+    val minLng: Double,
+    val maxLng: Double,
+)
