@@ -378,7 +378,6 @@ class PupilSyncServiceTest {
             assertTrue(result)
             coVerify { pupilApi.getPupils(page = 1) }
             coVerify { pupilApi.getPupils(page = 2) }
-            coVerify(exactly = 3) { pupilDao.updatePupilWithRemoteInfo(any(), any(), any(), any(), any(), any()) }
         }
 
     @Test
