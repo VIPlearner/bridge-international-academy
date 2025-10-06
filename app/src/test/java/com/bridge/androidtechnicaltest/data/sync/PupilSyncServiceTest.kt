@@ -371,7 +371,7 @@ class PupilSyncServiceTest {
                 Response.success(
                     PupilPageResponse(items = pupilsPage2, pageNumber = 2, itemCount = 3, totalPages = 2),
                 )
-            coEvery { pupilDao.updatePupilWithRemoteInfo(any(), any(), any(), any(), any(), any()) } returns 1
+            coEvery { pupilDao.upsert(any()) } just Runs
 
             val result = pupilSyncService.sync()
 
