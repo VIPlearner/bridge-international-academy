@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PupilDao {
-
     @Upsert
     suspend fun upsertAll(pupils: List<Pupil>)
 
@@ -24,7 +23,10 @@ interface PupilDao {
     suspend fun getPupilById(pupilId: Int): Pupil?
 
     @Query("UPDATE pupils SET pending_sync = 1, sync_type = :syncType WHERE pupil_id = :pupilId")
-    suspend fun markForSync(pupilId: Int, syncType: SyncType): Int
+    suspend fun markForSync(
+        pupilId: Int,
+        syncType: SyncType,
+    ): Int
 
     @Upsert
     suspend fun upsert(pupil: Pupil)
@@ -35,12 +37,14 @@ interface PupilDao {
     @Query("DELETE FROM pupils WHERE pupil_id = :pupilId")
     suspend fun deletePupilById(pupilId: Int): Int
 
-    @Query("UPDATE pupils SET name = :name, " +
+    @Query(
+        "UPDATE pupils SET name = :name, " +
             "country = :country, " +
             "image = :image, " +
             "latitude = :latitude, " +
             "longitude = :longitude " +
-            "WHERE pupil_id = :pupilId")
+            "WHERE pupil_id = :pupilId",
+    )
     suspend fun updatePupilWithRemoteInfo(
         pupilId: Int,
         name: String,
@@ -50,5 +54,6 @@ interface PupilDao {
         longitude: Double,
     ): Int
 
-
+    @Query("DELETE FROM pupils")
+    suspend fun deleteAll(): Int
 }

@@ -9,7 +9,7 @@ import com.bridge.androidtechnicaltest.data.db.dao.PupilDao
 import com.bridge.androidtechnicaltest.data.db.dto.Pupil
 import com.bridge.androidtechnicaltest.data.db.entities.LocationCacheEntity
 
-@Database(entities = [Pupil::class, LocationCacheEntity::class], version = 3, exportSchema = false)
+@Database(entities = [Pupil::class, LocationCacheEntity::class], version = 4, exportSchema = false)
 @TypeConverters(SyncTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract val pupilDao: PupilDao

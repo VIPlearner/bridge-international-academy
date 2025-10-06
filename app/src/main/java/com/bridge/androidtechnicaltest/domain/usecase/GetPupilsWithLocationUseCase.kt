@@ -8,30 +8,32 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class GetPupilsWithLocationUseCase @Inject constructor(
-    private val pupilRepository: IPupilRepository,
-    private val locationResolver: LocationResolver
-) {
-    operator fun invoke(): Flow<List<PupilWithLocationEntity>> {
-        return pupilRepository.pupils.map { pupils ->
-            pupils.map { pupil ->
-                val baseEntity = pupil.toDomainEntity()
-                val prettyLocation = try {
-                    locationResolver.getPrettyLocation(pupil.latitude, pupil.longitude)
-                } catch (e: Exception) {
-                    null
-                }
+class GetPupilsWithLocationUseCase
+    @Inject
+    constructor(
+        private val pupilRepository: IPupilRepository,
+        private val locationResolver: LocationResolver,
+    ) {
+        operator fun invoke(): Flow<List<PupilWithLocationEntity>> =
+            pupilRepository.pupils.map { pupils ->
+                pupils.map { pupil ->
+                    val baseEntity = pupil.toDomainEntity()
+                    val prettyLocation =
+                        try {
+                            locationResolver.getPrettyLocation(pupil.latitude, pupil.longitude)
+                        } catch (e: Exception) {
+                            null
+                        }
 
-                PupilWithLocationEntity(
-                    id = baseEntity.id,
-                    name = baseEntity.name,
-                    country = baseEntity.country,
-                    image = baseEntity.image,
-                    latitude = baseEntity.latitude,
-                    longitude = baseEntity.longitude,
-                    prettyLocation = prettyLocation
-                )
+                    PupilWithLocationEntity(
+                        id = baseEntity.id,
+                        name = baseEntity.name,
+                        country = baseEntity.country,
+                        image = baseEntity.image,
+                        latitude = baseEntity.latitude,
+                        longitude = baseEntity.longitude,
+                        prettyLocation = prettyLocation,
+                    )
+                }
             }
-        }
     }
-}

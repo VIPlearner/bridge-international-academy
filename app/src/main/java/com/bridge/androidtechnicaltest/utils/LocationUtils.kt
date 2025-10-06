@@ -1,15 +1,22 @@
 package com.bridge.androidtechnicaltest.utils
 
-import kotlin.math.*
+import kotlin.math.asin
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
 
 data class BoundingBox(
     val minLat: Double,
     val maxLat: Double,
     val minLng: Double,
-    val maxLng: Double
+    val maxLng: Double,
 )
 
-fun boundingBox(lat: Double, lng: Double, radiusKm: Double): BoundingBox {
+fun boundingBox(
+    lat: Double,
+    lng: Double,
+    radiusKm: Double,
+): BoundingBox {
     val earthRadiusKm = 6371.0
 
     val radiusRad = radiusKm / earthRadiusKm
@@ -28,11 +35,16 @@ fun boundingBox(lat: Double, lng: Double, radiusKm: Double): BoundingBox {
         minLat = Math.toDegrees(minLatRad),
         maxLat = Math.toDegrees(maxLatRad),
         minLng = Math.toDegrees(minLngRad),
-        maxLng = Math.toDegrees(maxLngRad)
+        maxLng = Math.toDegrees(maxLngRad),
     )
 }
 
-fun distanceKm(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
+fun distanceKm(
+    lat1: Double,
+    lng1: Double,
+    lat2: Double,
+    lng2: Double,
+): Double {
     val earthRadiusKm = 6371.0
 
     val dLat = Math.toRadians(lat2 - lat1)

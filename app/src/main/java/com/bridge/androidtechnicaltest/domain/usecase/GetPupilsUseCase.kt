@@ -7,12 +7,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class GetPupilsUseCase @Inject constructor(
-    private val pupilRepository: IPupilRepository
-) {
-    operator fun invoke(): Flow<List<PupilEntity>> {
-        return pupilRepository.pupils.map { pupils ->
-            pupils.map { it.toDomainEntity() }
-        }
+class GetPupilsUseCase
+    @Inject
+    constructor(
+        private val pupilRepository: IPupilRepository,
+    ) {
+        operator fun invoke(): Flow<List<PupilEntity>> =
+            pupilRepository.pupils.map { pupils ->
+                pupils.map { it.toDomainEntity() }
+            }
     }
-}

@@ -5,16 +5,21 @@ import com.bridge.androidtechnicaltest.data.network.dto.PupilPageResponse
 import com.bridge.androidtechnicaltest.data.network.dto.PupilResponse
 import com.bridge.androidtechnicaltest.data.network.dto.UpdatePupilRequest
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface PupilApi {
-
     /**
      * Gets a paged collection of pupils. Each page has five pupils.
      */
     @GET("pupils")
     suspend fun getPupils(
-        @Query("page") page: Int = 1
+        @Query("page") page: Int = 1,
     ): Response<PupilPageResponse>
 
     /**
@@ -22,7 +27,7 @@ interface PupilApi {
      */
     @GET("pupils/{pupilId}")
     suspend fun getPupil(
-        @Path("pupilId") pupilId: Int
+        @Path("pupilId") pupilId: Int,
     ): Response<PupilResponse>
 
     /**
@@ -30,7 +35,7 @@ interface PupilApi {
      */
     @POST("pupils")
     suspend fun createPupil(
-        @Body pupilRequest: CreatePupilRequest
+        @Body pupilRequest: CreatePupilRequest,
     ): Response<PupilResponse>
 
     /**
@@ -39,7 +44,7 @@ interface PupilApi {
     @PUT("pupils/{pupilId}")
     suspend fun updatePupil(
         @Path("pupilId") pupilId: Int,
-        @Body pupilRequest: UpdatePupilRequest
+        @Body pupilRequest: UpdatePupilRequest,
     ): Response<PupilResponse>
 
     /**
@@ -47,6 +52,6 @@ interface PupilApi {
      */
     @DELETE("pupils/{pupilId}")
     suspend fun deletePupil(
-        @Path("pupilId") pupilId: Int
+        @Path("pupilId") pupilId: Int,
     ): Response<Unit>
 }

@@ -8,21 +8,16 @@ import com.google.gson.annotations.SerializedName
 data class PupilResponse(
     @SerializedName("pupilId")
     val pupilId: Int,
-
     @SerializedName("name")
     val name: String,
-
     @SerializedName("country")
     val country: String,
-
     @SerializedName("image")
     val image: String?,
-
     @SerializedName("latitude")
     val latitude: Double,
-
     @SerializedName("longitude")
-    val longitude: Double
+    val longitude: Double,
 )
 
 /**
@@ -31,15 +26,12 @@ data class PupilResponse(
 data class PupilPageResponse(
     @SerializedName("items")
     val items: List<PupilResponse>,
-
     @SerializedName("pageNumber")
     val pageNumber: Int,
-
     @SerializedName("itemCount")
     val itemCount: Int,
-
     @SerializedName("totalPages")
-    val totalPages: Int
+    val totalPages: Int,
 )
 
 /**
@@ -48,18 +40,14 @@ data class PupilPageResponse(
 data class CreatePupilRequest(
     @SerializedName("name")
     val name: String,
-
     @SerializedName("country")
     val country: String,
-
     @SerializedName("image")
     val image: String?,
-
     @SerializedName("latitude")
     val latitude: Double,
-
     @SerializedName("longitude")
-    val longitude: Double
+    val longitude: Double,
 )
 
 /**
@@ -68,18 +56,14 @@ data class CreatePupilRequest(
 data class UpdatePupilRequest(
     @SerializedName("name")
     val name: String,
-
     @SerializedName("country")
     val country: String,
-
     @SerializedName("image")
     val image: String?,
-
     @SerializedName("latitude")
     val latitude: Double,
-
     @SerializedName("longitude")
-    val longitude: Double
+    val longitude: Double,
 )
 
 /**
@@ -88,16 +72,12 @@ data class UpdatePupilRequest(
 data class ProblemDetails(
     @SerializedName("type")
     val type: String?,
-
     @SerializedName("title")
     val title: String?,
-
     @SerializedName("status")
     val status: Int?,
-
     @SerializedName("detail")
     val detail: String?,
-
     @SerializedName("instance")
-    val instance: String?
+    val instance: String?,
 )

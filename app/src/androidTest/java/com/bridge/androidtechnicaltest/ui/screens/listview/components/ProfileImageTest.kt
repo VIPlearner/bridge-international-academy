@@ -1,12 +1,8 @@
-package com.bridge.androidtechnicaltest.ui.screens.list_view.components
+package com.bridge.androidtechnicaltest.ui.screens.listview.components
 
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.test.assertContentDescriptionEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -19,7 +15,6 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class ProfileImageTest {
-
     @get:Rule
     val composeTestRule = createComposeRule()
 
@@ -29,7 +24,7 @@ class ProfileImageTest {
             ProfileImage(
                 url = null,
                 contentDescription = "Profile picture",
-                modifier = Modifier.size(100.dp)
+                modifier = Modifier.size(100.dp),
             )
         }
 
@@ -44,7 +39,7 @@ class ProfileImageTest {
             ProfileImage(
                 url = "",
                 contentDescription = "Profile picture",
-                modifier = Modifier.size(100.dp)
+                modifier = Modifier.size(100.dp),
             )
         }
 
@@ -59,7 +54,7 @@ class ProfileImageTest {
             ProfileImage(
                 url = "   ",
                 contentDescription = "Profile picture",
-                modifier = Modifier.size(100.dp)
+                modifier = Modifier.size(100.dp),
             )
         }
 
@@ -74,9 +69,10 @@ class ProfileImageTest {
             ProfileImage(
                 url = "https://example.com/image.jpg",
                 contentDescription = "Profile picture",
-                modifier = Modifier
-                    .size(100.dp)
-                    .testTag("profile_image")
+                modifier =
+                    Modifier
+                        .size(100.dp)
+                        .testTag("profile_image"),
             )
         }
 
@@ -91,7 +87,7 @@ class ProfileImageTest {
             ProfileImage(
                 url = "invalid-url",
                 contentDescription = "Profile picture",
-                modifier = Modifier.size(100.dp)
+                modifier = Modifier.size(100.dp),
             )
         }
 
@@ -119,9 +115,10 @@ class ProfileImageTest {
             ProfileImage(
                 url = null,
                 contentDescription = "Profile picture",
-                modifier = Modifier
-                    .size(100.dp)
-                    .testTag(testTag)
+                modifier =
+                    Modifier
+                        .size(100.dp)
+                        .testTag(testTag),
             )
         }
 
@@ -136,7 +133,7 @@ class ProfileImageTest {
             ProfileImage(
                 url = null,
                 contentDescription = "",
-                modifier = Modifier.size(100.dp)
+                modifier = Modifier.size(100.dp),
             )
         }
 
@@ -151,7 +148,7 @@ class ProfileImageTest {
             ProfileImage(
                 url = "https://nonexistent-domain-12345.com/image.jpg",
                 contentDescription = "Profile picture",
-                modifier = Modifier.size(100.dp)
+                modifier = Modifier.size(100.dp),
             )
         }
 
@@ -177,7 +174,7 @@ class ProfileImageTest {
             ProfileImage(
                 url = "https://httpstat.us/404",
                 contentDescription = "Profile picture",
-                modifier = Modifier.size(100.dp)
+                modifier = Modifier.size(100.dp),
             )
         }
 

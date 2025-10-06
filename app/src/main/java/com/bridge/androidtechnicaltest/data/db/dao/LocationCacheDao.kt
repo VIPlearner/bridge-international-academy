@@ -7,21 +7,22 @@ import com.bridge.androidtechnicaltest.data.db.entities.LocationCacheEntity
 
 @Dao
 interface LocationCacheDao {
-
     @Upsert
     suspend fun upsert(locationCache: LocationCacheEntity)
 
-    @Query("""
+    @Query(
+        """
         SELECT * FROM location_cache 
         WHERE latitude BETWEEN :minLat AND :maxLat 
         AND longitude BETWEEN :minLng AND :maxLng
         ORDER BY timestamp DESC
-    """)
+    """,
+    )
     suspend fun findNearby(
         minLat: Double,
         maxLat: Double,
         minLng: Double,
-        maxLng: Double
+        maxLng: Double,
     ): List<LocationCacheEntity>
 
     @Query("DELETE FROM location_cache WHERE timestamp < :cutoffTime")

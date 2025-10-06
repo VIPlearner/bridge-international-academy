@@ -7,7 +7,6 @@ import com.bridge.androidtechnicaltest.BuildConfig
  * This class provides secure access to API keys through BuildConfig.
  */
 object ApiConstants {
-
     /**
      * OpenWeatherMap Geocoding API key.
      * This key is read from local.properties at build time and exposed through BuildConfig.

@@ -5,7 +5,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.work.Configuration
 import androidx.work.Operation
 import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import androidx.work.testing.SynchronousExecutor
 import androidx.work.testing.WorkManagerTestInitHelper
 import org.hamcrest.CoreMatchers.`is`
@@ -17,7 +16,6 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class PupilSyncManagerTest {
-
     private lateinit var context: Context
 
     private lateinit var pupilSyncManager: PupilSyncManager
@@ -25,9 +23,11 @@ class PupilSyncManagerTest {
     @Before
     fun setup() {
         context = ApplicationProvider.getApplicationContext()
-        val config = Configuration.Builder()
-            .setExecutor(SynchronousExecutor())
-            .build()
+        val config =
+            Configuration
+                .Builder()
+                .setExecutor(SynchronousExecutor())
+                .build()
         WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
         pupilSyncManager = PupilSyncManager(context)
     }
@@ -36,7 +36,7 @@ class PupilSyncManagerTest {
     fun testStartSync() {
         val workInfo = pupilSyncManager.startPeriodicSync()
 
-        assertThat(workInfo.state, `is`(WorkInfo.State.ENQUEUED))
+        assertThat(workInfo?.state, `is`(WorkInfo.State.ENQUEUED))
     }
 
     @Test

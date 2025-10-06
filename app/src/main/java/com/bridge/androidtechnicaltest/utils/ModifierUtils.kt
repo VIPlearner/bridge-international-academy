@@ -15,35 +15,37 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun Modifier.shimmerLoading(
-    durationMillis: Int = 1000,
-): Modifier {
+fun Modifier.shimmerLoading(durationMillis: Int = 1000): Modifier {
     val transition = rememberInfiniteTransition(label = "")
 
     val translateAnimation by transition.animateFloat(
         initialValue = 0f,
         targetValue = 500f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = durationMillis,
-                easing = LinearEasing,
+        animationSpec =
+            infiniteRepeatable(
+                animation =
+                    tween(
+                        durationMillis = durationMillis,
+                        easing = LinearEasing,
+                    ),
+                repeatMode = RepeatMode.Restart,
             ),
-            repeatMode = RepeatMode.Restart,
-        ),
         label = "",
     )
 
     return drawBehind {
         drawRect(
-            brush = Brush.linearGradient(
-                colors = listOf(
-                    Color.LightGray.copy(alpha = 0.2f),
-                    Color.LightGray.copy(alpha = 1.0f),
-                    Color.LightGray.copy(alpha = 0.2f),
+            brush =
+                Brush.linearGradient(
+                    colors =
+                        listOf(
+                            Color.LightGray.copy(alpha = 0.2f),
+                            Color.LightGray.copy(alpha = 1.0f),
+                            Color.LightGray.copy(alpha = 0.2f),
+                        ),
+                    start = Offset(x = translateAnimation, y = translateAnimation),
+                    end = Offset(x = translateAnimation + 100f, y = translateAnimation + 100f),
                 ),
-                start = Offset(x = translateAnimation, y = translateAnimation),
-                end = Offset(x = translateAnimation + 100f, y = translateAnimation + 100f),
-            )
         )
     }
 }

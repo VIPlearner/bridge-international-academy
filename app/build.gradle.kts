@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ktlint)
     kotlin("kapt")
 }
 
@@ -40,7 +41,7 @@ android {
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -59,13 +60,26 @@ android {
         buildConfig = true
     }
 
-
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
 }
+
+ktlint {
+    outputColorName.set("RED")
+    reporters {
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.HTML)
+    }
+    filter {
+        exclude("**/generated/**")
+        include("**/java/**")
+    }
+}
+
+tasks.getByPath("preBuild").dependsOn("ktlintFormat")
 
 dependencies {
     implementation(libs.androidx.core.ktx)
@@ -98,6 +112,9 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.okhttp.logging.interceptor)
+    implementation(libs.motion.toast)
+
+    ktlintRuleset(libs.compose.ktlint)
 
     // Test dependencies
     testImplementation(libs.junit)
@@ -108,6 +125,7 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.hilt.android.testing)
     testImplementation(libs.coil.test)
+    testImplementation(libs.androidx.ui.test.junit4)
     kaptTest(libs.hilt.compiler)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

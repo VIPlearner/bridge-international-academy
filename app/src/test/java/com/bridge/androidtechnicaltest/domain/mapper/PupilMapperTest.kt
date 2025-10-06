@@ -3,24 +3,27 @@ package com.bridge.androidtechnicaltest.domain.mapper
 import com.bridge.androidtechnicaltest.data.db.dto.Pupil
 import com.bridge.androidtechnicaltest.data.db.dto.SyncType
 import com.bridge.androidtechnicaltest.domain.entity.PupilEntity
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class PupilMapperTest {
-
     @Test
     fun pupilToDomainEntityMapsCorrectly() {
-        val pupil = Pupil(
-            pupilId = 123,
-            name = "John Doe",
-            country = "USA",
-            image = "profile.jpg",
-            latitude = 40.7128,
-            longitude = -74.0060,
-            remoteId = 456,
-            pendingSync = true,
-            syncType = SyncType.UPDATE
-        )
+        val pupil =
+            Pupil(
+                pupilId = 123,
+                name = "John Doe",
+                country = "USA",
+                image = "profile.jpg",
+                latitude = 40.7128,
+                longitude = -74.0060,
+                remoteId = 456,
+                pendingSync = true,
+                syncType = SyncType.UPDATE,
+            )
 
         val domainEntity = pupil.toDomainEntity()
 
@@ -34,17 +37,18 @@ class PupilMapperTest {
 
     @Test
     fun pupilToDomainEntityWithNullImageMapsCorrectly() {
-        val pupil = Pupil(
-            pupilId = 789,
-            name = "Jane Smith",
-            country = "Canada",
-            image = null,
-            latitude = 45.4215,
-            longitude = -75.6972,
-            remoteId = null,
-            pendingSync = false,
-            syncType = null
-        )
+        val pupil =
+            Pupil(
+                pupilId = 789,
+                name = "Jane Smith",
+                country = "Canada",
+                image = null,
+                latitude = 45.4215,
+                longitude = -75.6972,
+                remoteId = null,
+                pendingSync = false,
+                syncType = null,
+            )
 
         val domainEntity = pupil.toDomainEntity()
 
@@ -58,17 +62,18 @@ class PupilMapperTest {
 
     @Test
     fun pupilEntityToNewPupilWithDefaultIdMapsCorrectly() {
-        val pupilEntity = PupilEntity(
-            name = "New User",
-            country = "Germany",
-            image = "new.jpg",
-            latitude = 52.5200,
-            longitude = 13.4050
-        )
+        val pupilEntity =
+            PupilEntity(
+                name = "New User",
+                country = "Germany",
+                image = "new.jpg",
+                latitude = 52.5200,
+                longitude = 13.4050,
+            )
 
         val newPupil = pupilEntity.toNewPupil()
 
-        assertEquals(-1, newPupil.pupilId)
+        assertEquals(0, newPupil.pupilId)
         assertEquals("New User", newPupil.name)
         assertEquals("Germany", newPupil.country)
         assertEquals("new.jpg", newPupil.image)
@@ -81,14 +86,15 @@ class PupilMapperTest {
 
     @Test
     fun pupilEntityToNewPupilWithSpecificIdMapsCorrectly() {
-        val pupilEntity = PupilEntity(
-            id = 42,
-            name = "Existing User",
-            country = "France",
-            image = null,
-            latitude = 48.8566,
-            longitude = 2.3522
-        )
+        val pupilEntity =
+            PupilEntity(
+                id = 42,
+                name = "Existing User",
+                country = "France",
+                image = null,
+                latitude = 48.8566,
+                longitude = 2.3522,
+            )
 
         val newPupil = pupilEntity.toNewPupil()
 
@@ -105,26 +111,28 @@ class PupilMapperTest {
 
     @Test
     fun pupilEntityToUpdatedPupilPreservesExistingSyncFields() {
-        val existingPupil = Pupil(
-            pupilId = 100,
-            name = "Old Name",
-            country = "Old Country",
-            image = "old.jpg",
-            latitude = 1.0,
-            longitude = 2.0,
-            remoteId = 999,
-            pendingSync = true,
-            syncType = SyncType.ADD
-        )
+        val existingPupil =
+            Pupil(
+                pupilId = 100,
+                name = "Old Name",
+                country = "Old Country",
+                image = "old.jpg",
+                latitude = 1.0,
+                longitude = 2.0,
+                remoteId = 999,
+                pendingSync = true,
+                syncType = SyncType.ADD,
+            )
 
-        val updatedEntity = PupilEntity(
-            id = 100,
-            name = "Updated Name",
-            country = "Updated Country",
-            image = "updated.jpg",
-            latitude = 3.0,
-            longitude = 4.0
-        )
+        val updatedEntity =
+            PupilEntity(
+                id = 100,
+                name = "Updated Name",
+                country = "Updated Country",
+                image = "updated.jpg",
+                latitude = 3.0,
+                longitude = 4.0,
+            )
 
         val updatedPupil = updatedEntity.toUpdatedPupil(existingPupil)
 
@@ -141,26 +149,28 @@ class PupilMapperTest {
 
     @Test
     fun pupilEntityToUpdatedPupilWithNullImageHandledCorrectly() {
-        val existingPupil = Pupil(
-            pupilId = 200,
-            name = "Test User",
-            country = "Test Country",
-            image = "test.jpg",
-            latitude = 5.0,
-            longitude = 6.0,
-            remoteId = 888,
-            pendingSync = false,
-            syncType = SyncType.UPDATE
-        )
+        val existingPupil =
+            Pupil(
+                pupilId = 200,
+                name = "Test User",
+                country = "Test Country",
+                image = "test.jpg",
+                latitude = 5.0,
+                longitude = 6.0,
+                remoteId = 888,
+                pendingSync = false,
+                syncType = SyncType.UPDATE,
+            )
 
-        val updatedEntity = PupilEntity(
-            id = 200,
-            name = "Updated Test User",
-            country = "Updated Test Country",
-            image = null,
-            latitude = 7.0,
-            longitude = 8.0
-        )
+        val updatedEntity =
+            PupilEntity(
+                id = 200,
+                name = "Updated Test User",
+                country = "Updated Test Country",
+                image = null,
+                latitude = 7.0,
+                longitude = 8.0,
+            )
 
         val updatedPupil = updatedEntity.toUpdatedPupil(existingPupil)
 

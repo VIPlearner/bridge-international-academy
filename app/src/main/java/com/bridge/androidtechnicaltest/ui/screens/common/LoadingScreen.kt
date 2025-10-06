@@ -29,18 +29,20 @@ fun LoadingScreen(
             verticalArrangement = Arrangement.Center,
         ) {
             CircularProgressIndicator(
-                modifier = Modifier
-                    .size(114.dp)
-                    .align(alignment = Alignment.CenterHorizontally)
-                    .padding(16.dp)
-                    .testTag("loadingIndicator"),
-                strokeWidth = 2.dp
+                modifier =
+                    Modifier
+                        .size(114.dp)
+                        .align(alignment = Alignment.CenterHorizontally)
+                        .padding(16.dp)
+                        .testTag("loadingIndicator"),
+                strokeWidth = 2.dp,
             )
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally)
-                    .testTag("loadingMessage"),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                        .testTag("loadingMessage"),
                 textAlign = TextAlign.Center,
                 text = text,
                 style = MaterialTheme.typography.bodyLarge,
@@ -49,9 +51,8 @@ fun LoadingScreen(
     }
 }
 
-
 @Preview
 @Composable
-fun LoadingScreenPreview() {
+private fun LoadingScreenPreview() {
     LoadingScreen()
 }

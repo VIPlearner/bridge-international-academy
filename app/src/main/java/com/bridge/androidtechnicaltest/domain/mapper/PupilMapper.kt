@@ -3,20 +3,19 @@ package com.bridge.androidtechnicaltest.domain.mapper
 import com.bridge.androidtechnicaltest.data.db.dto.Pupil
 import com.bridge.androidtechnicaltest.domain.entity.PupilEntity
 
-fun Pupil.toDomainEntity(): PupilEntity {
-    return PupilEntity(
+fun Pupil.toDomainEntity(): PupilEntity =
+    PupilEntity(
         id = pupilId,
         name = name,
         country = country,
         image = image,
         latitude = latitude,
-        longitude = longitude
+        longitude = longitude,
     )
-}
 
-fun PupilEntity.toNewPupil(): Pupil {
-    return Pupil(
-        pupilId = if (id == -1) -1 else id,
+fun PupilEntity.toNewPupil(): Pupil =
+    Pupil(
+        pupilId = if (id <= 0) 0 else id,
         name = name,
         country = country,
         image = image,
@@ -24,16 +23,14 @@ fun PupilEntity.toNewPupil(): Pupil {
         longitude = longitude,
         remoteId = null,
         pendingSync = false,
-        syncType = null
+        syncType = null,
     )
-}
 
-fun PupilEntity.toUpdatedPupil(existingPupil: Pupil): Pupil {
-    return existingPupil.copy(
+fun PupilEntity.toUpdatedPupil(existingPupil: Pupil): Pupil =
+    existingPupil.copy(
         name = name,
         country = country,
         image = image,
         latitude = latitude,
-        longitude = longitude
+        longitude = longitude,
     )
-}

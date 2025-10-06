@@ -11,11 +11,12 @@ fun TechnicalTestTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    val dynamicThemeState = rememberDynamicMaterialThemeState(
-        isDark = isDarkTheme,
-        style = PaletteStyle.TonalSpot,
-        seedColor = SeedColor,
-    )
+    val dynamicThemeState =
+        rememberDynamicMaterialThemeState(
+            isDark = isDarkTheme,
+            style = PaletteStyle.TonalSpot,
+            seedColor = SeedColor,
+        )
 
     DynamicMaterialTheme(
         state = dynamicThemeState,

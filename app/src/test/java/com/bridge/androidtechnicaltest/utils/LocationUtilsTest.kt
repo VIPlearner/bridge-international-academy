@@ -1,11 +1,13 @@
 package com.bridge.androidtechnicaltest.utils
 
-import org.junit.Assert.*
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import kotlin.math.abs
+import org.junit.runner.RunWith
 
+@RunWith(AndroidJUnit4::class)
 class LocationUtilsTest {
-
     @Test
     fun boundingBoxCalculatesCorrectBounds() {
         val lat = 40.7128

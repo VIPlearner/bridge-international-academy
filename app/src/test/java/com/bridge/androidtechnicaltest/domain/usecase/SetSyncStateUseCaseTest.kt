@@ -10,7 +10,6 @@ import org.junit.Before
 import org.junit.Test
 
 class SetSyncStateUseCaseTest {
-
     private lateinit var dataStoreRepository: DataStoreRepository
     private lateinit var setSyncStateUseCase: SetSyncStateUseCase
 
@@ -21,38 +20,42 @@ class SetSyncStateUseCaseTest {
     }
 
     @Test
-    fun `invoke calls repository setPupilSyncState with OUT_OF_DATE`() = runTest {
-        coEvery { dataStoreRepository.setPupilSyncState(any()) } returns Unit
+    fun `invoke calls repository setPupilSyncState with OUT_OF_DATE`() =
+        runTest {
+            coEvery { dataStoreRepository.setPupilSyncState(any()) } returns Unit
 
-        setSyncStateUseCase(SyncState.OUT_OF_DATE)
+            setSyncStateUseCase(SyncState.OUT_OF_DATE)
 
-        coVerify { dataStoreRepository.setPupilSyncState(SyncState.OUT_OF_DATE) }
-    }
-
-    @Test
-    fun `invoke calls repository setPupilSyncState with UP_TO_DATE`() = runTest {
-        coEvery { dataStoreRepository.setPupilSyncState(any()) } returns Unit
-
-        setSyncStateUseCase(SyncState.UP_TO_DATE)
-
-        coVerify { dataStoreRepository.setPupilSyncState(SyncState.UP_TO_DATE) }
-    }
+            coVerify { dataStoreRepository.setPupilSyncState(SyncState.OUT_OF_DATE) }
+        }
 
     @Test
-    fun `invoke calls repository setPupilSyncState with SYNCING`() = runTest {
-        coEvery { dataStoreRepository.setPupilSyncState(any()) } returns Unit
+    fun `invoke calls repository setPupilSyncState with UP_TO_DATE`() =
+        runTest {
+            coEvery { dataStoreRepository.setPupilSyncState(any()) } returns Unit
 
-        setSyncStateUseCase(SyncState.SYNCING)
+            setSyncStateUseCase(SyncState.UP_TO_DATE)
 
-        coVerify { dataStoreRepository.setPupilSyncState(SyncState.SYNCING) }
-    }
+            coVerify { dataStoreRepository.setPupilSyncState(SyncState.UP_TO_DATE) }
+        }
 
     @Test
-    fun `invoke calls repository exactly once`() = runTest {
-        coEvery { dataStoreRepository.setPupilSyncState(any()) } returns Unit
+    fun `invoke calls repository setPupilSyncState with SYNCING`() =
+        runTest {
+            coEvery { dataStoreRepository.setPupilSyncState(any()) } returns Unit
 
-        setSyncStateUseCase(SyncState.SYNCING)
+            setSyncStateUseCase(SyncState.SYNCING)
 
-        coVerify(exactly = 1) { dataStoreRepository.setPupilSyncState(any()) }
-    }
+            coVerify { dataStoreRepository.setPupilSyncState(SyncState.SYNCING) }
+        }
+
+    @Test
+    fun `invoke calls repository exactly once`() =
+        runTest {
+            coEvery { dataStoreRepository.setPupilSyncState(any()) } returns Unit
+
+            setSyncStateUseCase(SyncState.SYNCING)
+
+            coVerify(exactly = 1) { dataStoreRepository.setPupilSyncState(any()) }
+        }
 }

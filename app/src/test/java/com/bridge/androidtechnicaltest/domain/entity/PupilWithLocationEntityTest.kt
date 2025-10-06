@@ -1,21 +1,22 @@
 package com.bridge.androidtechnicaltest.domain.entity
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class PupilWithLocationEntityTest {
-
     @Test
     fun createEntityWithAllFields() {
-        val entity = PupilWithLocationEntity(
-            id = 1,
-            name = "John Doe",
-            country = "USA",
-            image = "john.jpg",
-            latitude = 40.7128,
-            longitude = -74.0060,
-            prettyLocation = "New York"
-        )
+        val entity =
+            PupilWithLocationEntity(
+                id = 1,
+                name = "John Doe",
+                country = "USA",
+                image = "john.jpg",
+                latitude = 40.7128,
+                longitude = -74.0060,
+                prettyLocation = "New York",
+            )
 
         assertEquals(1, entity.id)
         assertEquals("John Doe", entity.name)
@@ -28,15 +29,16 @@ class PupilWithLocationEntityTest {
 
     @Test
     fun createEntityWithNullValues() {
-        val entity = PupilWithLocationEntity(
-            id = 2,
-            name = "Jane Smith",
-            country = "Canada",
-            image = null,
-            latitude = 45.4215,
-            longitude = -75.6972,
-            prettyLocation = null
-        )
+        val entity =
+            PupilWithLocationEntity(
+                id = 2,
+                name = "Jane Smith",
+                country = "Canada",
+                image = null,
+                latitude = 45.4215,
+                longitude = -75.6972,
+                prettyLocation = null,
+            )
 
         assertEquals(2, entity.id)
         assertEquals("Jane Smith", entity.name)
@@ -49,13 +51,14 @@ class PupilWithLocationEntityTest {
 
     @Test
     fun createEntityWithDefaultId() {
-        val entity = PupilWithLocationEntity(
-            name = "Test User",
-            country = "Test Country",
-            image = null,
-            latitude = 0.0,
-            longitude = 0.0
-        )
+        val entity =
+            PupilWithLocationEntity(
+                name = "Test User",
+                country = "Test Country",
+                image = null,
+                latitude = 0.0,
+                longitude = 0.0,
+            )
 
         assertEquals(-1, entity.id)
         assertNull(entity.prettyLocation)
