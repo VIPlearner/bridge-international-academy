@@ -98,7 +98,6 @@ class LocationResolver
                     val locations = response.body()
                     if (!locations.isNullOrEmpty()) {
                         val location = locations.first()
-                        // Prefer city name, fallback to state, then country
                         listOf(location.name, location.state, location.country)
                             .filter { !it.isNullOrBlank() }
                             .joinToString(", ")

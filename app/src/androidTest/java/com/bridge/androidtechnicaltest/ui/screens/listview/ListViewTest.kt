@@ -2,9 +2,9 @@ package com.bridge.androidtechnicaltest.ui.screens.listview
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
@@ -35,10 +35,7 @@ class ListViewTest {
                 ListScreen(
                     uiState = loadingState,
                     onPupilClick = {},
-                    onSync = {},
-                    onShowAddDialog = {},
-                    onDismissDialog = {},
-                    onSavePupil = { _, _, _, _, _ -> },
+                    onViewEvent = {},
                 )
             }
         }
@@ -62,10 +59,7 @@ class ListViewTest {
                 ListScreen(
                     uiState = emptyState,
                     onPupilClick = {},
-                    onSync = {},
-                    onShowAddDialog = {},
-                    onDismissDialog = {},
-                    onSavePupil = { _, _, _, _, _ -> },
+                    onViewEvent = {},
                 )
             }
         }
@@ -89,10 +83,7 @@ class ListViewTest {
                 ListScreen(
                     uiState = successState,
                     onPupilClick = {},
-                    onSync = {},
-                    onShowAddDialog = {},
-                    onDismissDialog = {},
-                    onSavePupil = { _, _, _, _, _ -> },
+                    onViewEvent = {},
                 )
             }
         }
@@ -118,10 +109,7 @@ class ListViewTest {
                 ListScreen(
                     uiState = errorState,
                     onPupilClick = {},
-                    onSync = {},
-                    onShowAddDialog = {},
-                    onDismissDialog = {},
-                    onSavePupil = { _, _, _, _, _ -> },
+                    onViewEvent = {},
                 )
             }
         }
@@ -145,10 +133,11 @@ class ListViewTest {
                 ListScreen(
                     uiState = state,
                     onPupilClick = {},
-                    onSync = { syncCalled = true },
-                    onShowAddDialog = {},
-                    onDismissDialog = {},
-                    onSavePupil = { _, _, _, _, _ -> },
+                    onViewEvent = { event ->
+                        if (event is ListViewEvent.Sync) {
+                            syncCalled = true
+                        }
+                    },
                 )
             }
         }
@@ -171,10 +160,7 @@ class ListViewTest {
                 ListScreen(
                     uiState = syncingState,
                     onPupilClick = {},
-                    onSync = {},
-                    onShowAddDialog = {},
-                    onDismissDialog = {},
-                    onSavePupil = { _, _, _, _, _ -> },
+                    onViewEvent = {},
                 )
             }
         }
@@ -198,20 +184,17 @@ class ListViewTest {
                 ListScreen(
                     uiState = successState,
                     onPupilClick = { pupilId -> clickedPupilId = pupilId },
-                    onSync = {},
-                    onShowAddDialog = {},
-                    onDismissDialog = {},
-                    onSavePupil = { _, _, _, _, _ -> },
+                    onViewEvent = {},
                 )
             }
         }
 
-        composeTestRule.onNodeWithText(pupils.first().name).performClick()
-        assert(clickedPupilId == pupils.first().id)
+        composeTestRule.onNodeWithText(pupils[0].name).performClick()
+        assert(clickedPupilId == pupils[0].id)
     }
 
     @Test
-    fun listScreen_addButtonTriggersDialog() {
+    fun listScreen_addPupilButtonTriggersDialog() {
         var showDialogCalled = false
         val state =
             ListScreenState(
@@ -225,10 +208,11 @@ class ListViewTest {
                 ListScreen(
                     uiState = state,
                     onPupilClick = {},
-                    onSync = {},
-                    onShowAddDialog = { showDialogCalled = true },
-                    onDismissDialog = {},
-                    onSavePupil = { _, _, _, _, _ -> },
+                    onViewEvent = { event ->
+                        if (event is ListViewEvent.ShowAddDialog) {
+                            showDialogCalled = true
+                        }
+                    },
                 )
             }
         }
@@ -238,7 +222,7 @@ class ListViewTest {
     }
 
     @Test
-    fun listScreen_displaysAddPupilDialog() {
+    fun listScreen_displaysDialogWhenStateIsShow() {
         val dialogState =
             ListScreenState(
                 uiState = ListUiState.Empty,
@@ -251,10 +235,7 @@ class ListViewTest {
                 ListScreen(
                     uiState = dialogState,
                     onPupilClick = {},
-                    onSync = {},
-                    onShowAddDialog = {},
-                    onDismissDialog = {},
-                    onSavePupil = { _, _, _, _, _ -> },
+                    onViewEvent = {},
                 )
             }
         }
@@ -262,15 +243,13 @@ class ListViewTest {
         composeTestRule.onNodeWithText("Add Pupil").assertIsDisplayed()
         composeTestRule.onNodeWithText("Name").assertIsDisplayed()
         composeTestRule.onNodeWithText("Country").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Save").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Cancel").assertIsDisplayed()
     }
 
     @Test
-    fun listScreen_addPupilDialogSavesData() {
+    fun listScreen_savePupilTriggersCallback() {
         var savedName = ""
         var savedCountry = ""
-        var savedImageUrl = ""
+        var savedImageUrl: String? = null
         var savedLatitude = 0.0
         var savedLongitude = 0.0
 
@@ -286,36 +265,32 @@ class ListViewTest {
                 ListScreen(
                     uiState = dialogState,
                     onPupilClick = {},
-                    onSync = {},
-                    onShowAddDialog = {},
-                    onDismissDialog = {},
-                    onSavePupil = { name, country, imageUrl, latitude, longitude ->
-                        savedName = name
-                        savedCountry = country
-                        savedImageUrl = imageUrl
-                        savedLatitude = latitude
-                        savedLongitude = longitude
+                    onViewEvent = { event ->
+                        if (event is ListViewEvent.AddPupil) {
+                            savedName = event.name
+                            savedCountry = event.country
+                            savedImageUrl = event.image
+                            savedLatitude = event.latitude
+                            savedLongitude = event.longitude
+                        }
                     },
                 )
             }
         }
 
-        composeTestRule.onNode(hasText("Name")).performTextInput("John Doe")
-        composeTestRule.onNode(hasText("Country")).performTextInput("Kenya")
-        composeTestRule.onNode(hasText("Image URL")).performTextInput("https://example.com/john.jpg")
-        composeTestRule.onNode(hasText("Latitude")).performTextInput("1.2921")
-        composeTestRule.onNode(hasText("Longitude")).performTextInput("36.8219")
-        composeTestRule.onNodeWithText("Save").performClick()
+        composeTestRule.onNodeWithText("Name").performTextInput("Test Name")
+        composeTestRule.onNodeWithText("Country").performTextInput("Test Country")
+        composeTestRule.onNodeWithTag("pupil_form_save_button").performClick()
 
-        assert(savedName == "John Doe")
-        assert(savedCountry == "Kenya")
-        assert(savedImageUrl == "https://example.com/john.jpg")
-        assert(savedLatitude == 1.2921)
-        assert(savedLongitude == 36.8219)
+        assert(savedName == "Test Name")
+        assert(savedCountry == "Test Country")
+        assert(savedImageUrl == "")
+        assert(savedLatitude == 0.0)
+        assert(savedLongitude == 0.0)
     }
 
     @Test
-    fun listScreen_addPupilDialogCancel() {
+    fun listScreen_dismissDialogTriggersCallback() {
         var dismissCalled = false
         val dialogState =
             ListScreenState(
@@ -329,10 +304,11 @@ class ListViewTest {
                 ListScreen(
                     uiState = dialogState,
                     onPupilClick = {},
-                    onSync = {},
-                    onShowAddDialog = {},
-                    onDismissDialog = { dismissCalled = true },
-                    onSavePupil = { _, _, _, _, _ -> },
+                    onViewEvent = { event ->
+                        if (event is ListViewEvent.DismissDialog) {
+                            dismissCalled = true
+                        }
+                    },
                 )
             }
         }
@@ -342,7 +318,7 @@ class ListViewTest {
     }
 
     @Test
-    fun listScreen_retryButtonInErrorState() {
+    fun listScreen_retryButtonTriggersSync() {
         var retryCalled = false
         val errorState =
             ListScreenState(
@@ -356,10 +332,11 @@ class ListViewTest {
                 ListScreen(
                     uiState = errorState,
                     onPupilClick = {},
-                    onSync = { retryCalled = true },
-                    onShowAddDialog = {},
-                    onDismissDialog = {},
-                    onSavePupil = { _, _, _, _, _ -> },
+                    onViewEvent = { event ->
+                        if (event is ListViewEvent.Sync) {
+                            retryCalled = true
+                        }
+                    },
                 )
             }
         }

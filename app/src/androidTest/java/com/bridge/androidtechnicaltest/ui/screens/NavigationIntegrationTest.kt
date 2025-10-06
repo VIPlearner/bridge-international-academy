@@ -17,11 +17,13 @@ import com.bridge.androidtechnicaltest.ui.TestDataUtils
 import com.bridge.androidtechnicaltest.ui.screens.detailview.DetailScreen
 import com.bridge.androidtechnicaltest.ui.screens.detailview.DetailScreenState
 import com.bridge.androidtechnicaltest.ui.screens.detailview.DetailUiState
+import com.bridge.androidtechnicaltest.ui.screens.detailview.DetailViewEvent
 import com.bridge.androidtechnicaltest.ui.screens.detailview.EditPupilState
 import com.bridge.androidtechnicaltest.ui.screens.listview.AddorEditPupilState
 import com.bridge.androidtechnicaltest.ui.screens.listview.ListScreen
 import com.bridge.androidtechnicaltest.ui.screens.listview.ListScreenState
 import com.bridge.androidtechnicaltest.ui.screens.listview.ListUiState
+import com.bridge.androidtechnicaltest.ui.screens.listview.ListViewEvent
 import com.bridge.androidtechnicaltest.ui.theme.TechnicalTestTheme
 import org.junit.Rule
 import org.junit.Test
@@ -44,7 +46,6 @@ class NavigationIntegrationTest {
         composeTestRule.setContent {
             TechnicalTestTheme {
                 var currentScreen by remember { mutableStateOf("list") }
-                var selectedPupilId by remember { mutableStateOf(-1) }
 
                 when (currentScreen) {
                     "list" -> {
@@ -56,13 +57,9 @@ class NavigationIntegrationTest {
                                     addorEditPupilState = AddorEditPupilState(),
                                 ),
                             onPupilClick = { pupilId ->
-                                selectedPupilId = pupilId
                                 currentScreen = "detail"
                             },
-                            onSync = {},
-                            onShowAddDialog = {},
-                            onDismissDialog = {},
-                            onSavePupil = { _, _, _, _, _ -> },
+                            onViewEvent = {},
                         )
                     }
                     "detail" -> {
@@ -73,10 +70,7 @@ class NavigationIntegrationTest {
                                     editPupilState = EditPupilState(),
                                 ),
                             onNavigateBack = { currentScreen = "list" },
-                            onShowEditDialog = {},
-                            onDismissDialog = {},
-                            onUpdatePupil = { _, _, _, _, _ -> },
-                            onDeletePupil = {},
+                            onViewEvent = {},
                         )
                     }
                 }
@@ -121,10 +115,7 @@ class NavigationIntegrationTest {
                                     addorEditPupilState = AddorEditPupilState(),
                                 ),
                             onPupilClick = { currentScreen = "detail" },
-                            onSync = {},
-                            onShowAddDialog = {},
-                            onDismissDialog = {},
-                            onSavePupil = { _, _, _, _, _ -> },
+                            onViewEvent = {},
                         )
                     }
                     "detail" -> {
@@ -135,12 +126,14 @@ class NavigationIntegrationTest {
                                     editPupilState = EditPupilState(showDialog = showEditDialog),
                                 ),
                             onNavigateBack = { currentScreen = "list" },
-                            onShowEditDialog = { showEditDialog = true },
-                            onDismissDialog = { showEditDialog = false },
-                            onUpdatePupil = { _, _, _, _, _ ->
-                                showEditDialog = false
+                            onViewEvent = { event ->
+                                when (event) {
+                                    is DetailViewEvent.ShowEditDialog -> showEditDialog = true
+                                    is DetailViewEvent.DismissDialog -> showEditDialog = false
+                                    is DetailViewEvent.UpdatePupil -> showEditDialog = false
+                                    is DetailViewEvent.DeletePupil -> currentScreen = "list"
+                                }
                             },
-                            onDeletePupil = { currentScreen = "list" },
                         )
                     }
                 }
@@ -183,10 +176,7 @@ class NavigationIntegrationTest {
                                     addorEditPupilState = AddorEditPupilState(),
                                 ),
                             onPupilClick = {},
-                            onSync = {},
-                            onShowAddDialog = {},
-                            onDismissDialog = {},
-                            onSavePupil = { _, _, _, _, _ -> },
+                            onViewEvent = {},
                         )
                     }
                     "detail" -> {
@@ -197,10 +187,11 @@ class NavigationIntegrationTest {
                                     editPupilState = EditPupilState(),
                                 ),
                             onNavigateBack = { currentScreen = "list" },
-                            onShowEditDialog = {},
-                            onDismissDialog = {},
-                            onUpdatePupil = { _, _, _, _, _ -> },
-                            onDeletePupil = { currentScreen = "list" },
+                            onViewEvent = { event ->
+                                if (event is DetailViewEvent.DeletePupil) {
+                                    currentScreen = "list"
+                                }
+                            },
                         )
                     }
                 }
@@ -234,12 +225,16 @@ class NavigationIntegrationTest {
                             addorEditPupilState = AddorEditPupilState(showDialog = showDialog),
                         ),
                     onPupilClick = {},
-                    onSync = {},
-                    onShowAddDialog = { showDialog = true },
-                    onDismissDialog = { showDialog = false },
-                    onSavePupil = { _, _, _, _, _ ->
-                        showDialog = false
-                        pupilAdded = true
+                    onViewEvent = { event ->
+                        when (event) {
+                            is ListViewEvent.ShowAddDialog -> showDialog = true
+                            is ListViewEvent.DismissDialog -> showDialog = false
+                            is ListViewEvent.AddPupil -> {
+                                showDialog = false
+                                pupilAdded = true
+                            }
+                            else -> {}
+                        }
                     },
                 )
             }

@@ -7,14 +7,6 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface GeocodingApi {
-    /**
-     * Reverse geocoding to get location name by geographical coordinates.
-     *
-     * @param latitude Geographical coordinate (latitude)
-     * @param longitude Geographical coordinate (longitude)
-     * @param limit Number of location names in the API response (optional)
-     * @param apiKey Your unique API key
-     */
     @GET("geo/1.0/reverse")
     suspend fun reverseGeocode(
         @Query("lat") latitude: Double,

@@ -38,6 +38,7 @@ class PupilSyncServiceTest {
 
         coEvery { dataStoreRepository.setPupilSyncState(any()) } just Runs
         coEvery { dataStoreRepository.getPupilSyncState() } returns flowOf(SyncState.UP_TO_DATE)
+        coEvery { pupilDao.deleteAll() } returns 1
     }
 
     @After

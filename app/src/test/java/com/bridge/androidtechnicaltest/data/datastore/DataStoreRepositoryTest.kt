@@ -12,8 +12,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -31,39 +29,6 @@ class DataStoreRepositoryTest {
     fun tearDown() {
         clearAllMocks()
     }
-
-    @Test
-    fun `getSampleToggleState returns false when preference is not set`() =
-        runTest {
-            val emptyPreferences = preferencesOf()
-            every { dataStore.data } returns flowOf(emptyPreferences)
-
-            val result = dataStoreRepository.getSampleToggleState().first()
-
-            assertFalse(result)
-        }
-
-    @Test
-    fun `getSampleToggleState returns true when preference is set to true`() =
-        runTest {
-            val preferences = preferencesOf(DataStoreConstants.SAMPLE_TOGGLE_KEY to true)
-            every { dataStore.data } returns flowOf(preferences)
-
-            val result = dataStoreRepository.getSampleToggleState().first()
-
-            assertTrue(result)
-        }
-
-    @Test
-    fun `getSampleToggleState returns false when preference is set to false`() =
-        runTest {
-            val preferences = preferencesOf(DataStoreConstants.SAMPLE_TOGGLE_KEY to false)
-            every { dataStore.data } returns flowOf(preferences)
-
-            val result = dataStoreRepository.getSampleToggleState().first()
-
-            assertFalse(result)
-        }
 
     @Test
     fun `getPupilSyncState returns OUT_OF_DATE when preference is not set`() =

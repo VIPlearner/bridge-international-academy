@@ -35,10 +35,9 @@ class DetailViewTest {
                 DetailScreen(
                     uiState = loadingState,
                     onNavigateBack = {},
-                    onShowEditDialog = {},
-                    onDismissDialog = {},
-                    onUpdatePupil = { _, _, _, _, _ -> },
-                    onDeletePupil = {},
+                    onViewEvent = {
+                        // do nothing
+                    },
                 )
             }
         }
@@ -61,10 +60,9 @@ class DetailViewTest {
                 DetailScreen(
                     uiState = errorState,
                     onNavigateBack = {},
-                    onShowEditDialog = {},
-                    onDismissDialog = {},
-                    onUpdatePupil = { _, _, _, _, _ -> },
-                    onDeletePupil = {},
+                    onViewEvent = {
+                        // do nothing
+                    },
                 )
             }
         }
@@ -92,10 +90,9 @@ class DetailViewTest {
                 DetailScreen(
                     uiState = successState,
                     onNavigateBack = {},
-                    onShowEditDialog = {},
-                    onDismissDialog = {},
-                    onUpdatePupil = { _, _, _, _, _ -> },
-                    onDeletePupil = {},
+                    onViewEvent = {
+                        // do nothing
+                    },
                 )
             }
         }
@@ -124,15 +121,14 @@ class DetailViewTest {
                 DetailScreen(
                     uiState = successState,
                     onNavigateBack = { backCalled = true },
-                    onShowEditDialog = {},
-                    onDismissDialog = {},
-                    onUpdatePupil = { _, _, _, _, _ -> },
-                    onDeletePupil = {},
+                    onViewEvent = {
+                        // do nothing
+                    },
                 )
             }
         }
 
-        composeTestRule.onNodeWithContentDescription("Back").performClick()
+        composeTestRule.onNodeWithTag("detail_back_button").performClick()
         assert(backCalled)
     }
 
@@ -151,10 +147,11 @@ class DetailViewTest {
                 DetailScreen(
                     uiState = successState,
                     onNavigateBack = {},
-                    onShowEditDialog = { editCalled = true },
-                    onDismissDialog = {},
-                    onUpdatePupil = { _, _, _, _, _ -> },
-                    onDeletePupil = {},
+                    onViewEvent = {
+                        if (it is DetailViewEvent.ShowEditDialog) {
+                            editCalled = true
+                        }
+                    },
                 )
             }
         }
@@ -178,10 +175,11 @@ class DetailViewTest {
                 DetailScreen(
                     uiState = successState,
                     onNavigateBack = {},
-                    onShowEditDialog = {},
-                    onDismissDialog = {},
-                    onUpdatePupil = { _, _, _, _, _ -> },
-                    onDeletePupil = { deleteCalled = true },
+                    onViewEvent = {
+                        if (it is DetailViewEvent.DeletePupil) {
+                            deleteCalled = true
+                        }
+                    },
                 )
             }
         }
@@ -208,10 +206,9 @@ class DetailViewTest {
                 DetailScreen(
                     uiState = dialogState,
                     onNavigateBack = {},
-                    onShowEditDialog = {},
-                    onDismissDialog = {},
-                    onUpdatePupil = { _, _, _, _, _ -> },
-                    onDeletePupil = {},
+                    onViewEvent = {
+                        // do nothing
+                    },
                 )
             }
         }
@@ -242,13 +239,12 @@ class DetailViewTest {
                 DetailScreen(
                     uiState = dialogState,
                     onNavigateBack = {},
-                    onShowEditDialog = {},
-                    onDismissDialog = {},
-                    onUpdatePupil = { name, country, _, _, _ ->
-                        updatedName = name
-                        updatedCountry = country
+                    onViewEvent = {
+                        if (it is DetailViewEvent.UpdatePupil) {
+                            updatedName = it.name
+                            updatedCountry = it.country
+                        }
                     },
-                    onDeletePupil = {},
                 )
             }
         }
@@ -286,10 +282,11 @@ class DetailViewTest {
                 DetailScreen(
                     uiState = dialogState,
                     onNavigateBack = {},
-                    onShowEditDialog = {},
-                    onDismissDialog = { dismissCalled = true },
-                    onUpdatePupil = { _, _, _, _, _ -> },
-                    onDeletePupil = {},
+                    onViewEvent = {
+                        if (it is DetailViewEvent.DismissDialog) {
+                            dismissCalled = true
+                        }
+                    },
                 )
             }
         }
@@ -312,10 +309,9 @@ class DetailViewTest {
                 DetailScreen(
                     uiState = deletingState,
                     onNavigateBack = {},
-                    onShowEditDialog = {},
-                    onDismissDialog = {},
-                    onUpdatePupil = { _, _, _, _, _ -> },
-                    onDeletePupil = {},
+                    onViewEvent = {
+                        // do nothing
+                    },
                 )
             }
         }
@@ -336,10 +332,9 @@ class DetailViewTest {
                 DetailScreen(
                     uiState = loadingState,
                     onNavigateBack = {},
-                    onShowEditDialog = {},
-                    onDismissDialog = {},
-                    onUpdatePupil = { _, _, _, _, _ -> },
-                    onDeletePupil = {},
+                    onViewEvent = {
+                        // do nothing
+                    },
                 )
             }
         }
@@ -362,10 +357,9 @@ class DetailViewTest {
                 DetailScreen(
                     uiState = updatingState,
                     onNavigateBack = {},
-                    onShowEditDialog = {},
-                    onDismissDialog = {},
-                    onUpdatePupil = { _, _, _, _, _ -> },
-                    onDeletePupil = {},
+                    onViewEvent = {
+                        // do nothing
+                    },
                 )
             }
         }
